@@ -1,0 +1,1 @@
+document.getElementById('game-board').appendChild(block('block-box'))

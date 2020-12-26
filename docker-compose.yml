@@ -1,0 +1,19 @@
+version: '3.7'
+services:
+  webserver:
+    image: nginx:alpine
+    container_name: webserver
+    restart: unless-stopped
+    # tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/usr/share/nginx/html
+      # - ./nginx/conf.d/:/etc/nginx/conf.d/default.conf
+    networks:
+      - puzzle-network
+#Docker Networks
+networks:
+  puzzle-network:
+    driver: bridge
