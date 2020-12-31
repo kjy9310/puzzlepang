@@ -1,3 +1,17 @@
 #game-board{
     border:1px solid magenta;
-}  
+    display: inline-block;
+    width: 450px;
+    height: 450px;
+    position: relative;
+}
+.block{
+    position: absolute;
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    padding: 1px;
+    border:1px solid pink;
+    box-sizing: border-box;
+    transition: all 1s;
+}
