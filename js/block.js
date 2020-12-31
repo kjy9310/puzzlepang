@@ -78,7 +78,18 @@ const blockOnClick = (event) => {
         array[tempX][tempY].style.left = tempX * 50 +"px"
         
         array[x][y] = selectedBlock
+
+        array[tempX][tempY].style.zIndex = 1000
+        array[x][y].style.zIndex = 1000
+        setTimeout(()=>{
+            array[tempX][tempY].style.zIndex = ""
+            array[x][y].style.zIndex = ""
+        },1000)
+
         selectedBlock = undefined
     }
-    console.log('end event', array)
+}
+
+const moveBlock = () => {
+
 }

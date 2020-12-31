@@ -19,3 +19,11 @@ const reloadBoard = () => {
         }
     }
 }
+
+const sortBoard = () => {
+    
+}
+
+const checkChain = () => {
+
+}
