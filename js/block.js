@@ -37,17 +37,24 @@ document.onmouseup = null;
 document.onmousemove = null;
 }
 
+function getRandomInt(min, max) {
+    min = Math.ceil(min)
+    max = Math.floor(max)
+    return Math.floor(Math.random() * (max - min)) + min
+}
 
 const block = (x, y, className)=>{
-    const text = `${x}-${y}`
+    // const text = `${x}-${y}`
+    const type = getRandomInt(0, 4)
     const div = document.createElement('div')
     div.className = className
     div.style.top = `${y*50}px`
     div.style.left = `${x*50}px`
     div.style.backgroundColor = 'magenta'
-    div.innerText=text
+    div.innerText = type
     div.dataset.x = x
     div.dataset.y = y
+    div.dataset.type = type
     div.onclick = blockOnClick
     return div
 }
@@ -84,6 +91,7 @@ const blockOnClick = (event) => {
         setTimeout(()=>{
             array[tempX][tempY].style.zIndex = ""
             array[x][y].style.zIndex = ""
+            reloadBoard()
         },1000)
 
         selectedBlock = undefined
