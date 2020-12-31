@@ -45,11 +45,11 @@ function getRandomInt(min, max) {
 
 const block = (x, y, className)=>{
     // const text = `${x}-${y}`
-    const type = getRandomInt(0, 4)
+    const type = getRandomInt(1, 6)
     const div = document.createElement('div')
     div.className = className
-    div.style.top = `${y*50}px`
-    div.style.left = `${x*50}px`
+    div.style.left = `${y*50}px`
+    div.style.top = `${x*50}px`
     div.style.backgroundColor = 'magenta'
     div.innerText = type
     div.dataset.x = x
@@ -75,14 +75,14 @@ const blockOnClick = (event) => {
         selectedBlock.dataset.x = x
         selectedBlock.dataset.y = y
         
-        selectedBlock.style.top = y * 50 +"px"
-        selectedBlock.style.left = x * 50 +"px"
+        selectedBlock.style.left = y * 50 +"px"
+        selectedBlock.style.top = x * 50 +"px"
         
         array[tempX][tempY] = array[x][y]
         array[tempX][tempY].dataset.x = tempX
         array[tempX][tempY].dataset.y = tempY
-        array[tempX][tempY].style.top = tempY * 50 +"px"
-        array[tempX][tempY].style.left = tempX * 50 +"px"
+        array[tempX][tempY].style.left = tempY * 50 +"px"
+        array[tempX][tempY].style.top = tempX * 50 +"px"
         
         array[x][y] = selectedBlock
 
@@ -92,7 +92,8 @@ const blockOnClick = (event) => {
             array[tempX][tempY].style.zIndex = ""
             array[x][y].style.zIndex = ""
             reloadBoard()
-        },1000)
+            
+        },1100)
 
         selectedBlock = undefined
     }

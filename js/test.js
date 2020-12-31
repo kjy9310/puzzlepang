@@ -11,20 +11,40 @@ for (let i = 0 ; i < 9; i++){
 // document.getElementById('game-board').appendChild(block('block-box'))
 
 const reloadBoard = async () => {
-    console.log('reloadBoard')
-    document.getElementById('game-board').innerHtml=""
-    for (let i = 0 ; i < array.length; i++){
-        for (let j = 0 ; j < array[i].length; j++){
-            const check = await checkChain(array[i][j])
-            if (check){
-                array[i][j].style.backgroundColor="white"
+    // return new Promise(async resolve=>{
+        // console.log('reloadBoard')
+        // document.getElementById('game-board').innerHtml=""
+        for (let i = 0 ; i < array.length; i++){
+            for (let j = 0 ; j < array[i].length; j++){
+                const check = array[i][j] && await checkChain(array[i][j])
+                if (check){
+                    array[i][j].dataset.delete = "1"
+                    array[i][j].innerText += 0
+                    array[i][j].style.backgroundColor="white"
+                }
             }
         }
-    }
+        setTimeout(()=>sortBoard(),1000)
+        // resolve()
+    // })
 }
 
-const sortBoard = () => {
+const sortBoard = () => { 
+    console.log('sortBoard')
+    for (let i = 0 ; i < array.length; i++){
+        let emptyIndex = 0
+        for (let j = 0 ; j < array[i].length; j++){
+            if (array[i][j]&&array[i][j].dataset.delete==="1"){
+                document.getElementById('game-board').removeChild(array[i][j])
+                array[i][j]=undefined
+                emptyIndex = j
+            }
+        }
 
+    }
+    // for (let i = 0 ; i < array.length; i++){
+        
+    // }
 }
 
 const checkChain = async (self, direction) => {
