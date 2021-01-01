@@ -17,6 +17,14 @@ const Around = [
     {x:1, y: 1},
 ]
 
+const typeToShape = {
+    1:"blue",
+    2:"green",
+    3:"red",
+    4:"magenta",
+    5:"purple",
+}
+
 let processFinished = false
 
 function getRandomInt(min, max) {
@@ -32,13 +40,12 @@ const createBlock = (x,y, className) => {
     // starting x is alway top
     const type = getRandomInt(1, 6)
     const div = document.createElement('div')
-    div.className = className
+    div.className = className + " " + typeToShape[type]
     div.style.left = `${x*50}px`
     div.style.top = `${-50*y}px`//`${x*50}px`
-    div.style.backgroundColor = 'magenta'
     div.dataset.x = x
     div.dataset.y = y
-    div.innerText = type
+    // div.innerText = type
     div.onclick = blockOnClick
     document.getElementById('game-board').appendChild(div)
     return {
@@ -60,10 +67,10 @@ const blockOnClick = async (event) => {
     // console.log('checkRes', checkRes)
     const x = parseInt(event.target.dataset.x)
     const y = parseInt(event.target.dataset.y)
-    console.log('event', event.target, this)
+    
     if (selected===undefined){
         selected = Board[x][y]
-        selected.div.style.border="2px solid yellow"
+        selected.div.style.border="15px inset white"
     } else {
         selected.div.style.border=""
         const temp = Board[x][y]
@@ -82,7 +89,7 @@ const blockOnClick = async (event) => {
         
         selected = undefined
         await setBlocks()
-        setTimeout(()=>processing(),1400)
+        setTimeout(()=>processing(),1100)
     }
 }
 
@@ -118,13 +125,18 @@ const checkBoard = (need2Run)=>new Promise(async resolve=>{
     resolve(false)
 })
 
+let RemovedBlockCount = 0
+
 const removeBlocks = () =>{
     return new Promise(resolve=>{
         for (let i = 0 ; i < Board.length; i++){
             let newArray = []
             for (let j = 0 ; j < Board[i].length; j++){
                 if (Board[i][j]&&Board[i][j].delete==="1"){
-                    document.getElementById('game-board').removeChild(Board[i][j].div)
+                    RemovedBlockCount++
+                    const targetNode = Board[i][j].div
+                    targetNode.className+=" deleted"
+                    setTimeout(()=>document.getElementById('game-board').removeChild(targetNode),1000)
                 }else{
                     newArray.push(Board[i][j])
                 }
@@ -134,6 +146,7 @@ const removeBlocks = () =>{
                 Board[i].push(createBlock(i, j, 'block block-box'))
             }
         }
+        console.log('RemovedBlockCount', RemovedBlockCount)
         resolve()
     })
 }
@@ -172,17 +185,33 @@ const checkChain = async (self, direction) => {
     }   
 }
 
+let ComboCount = 0
+
 const processing = async () =>{
     processFinished = false
-    await checkBoard()
-    await removeBlocks()
-    await setBlocks()
-    await new Promise(resolve=>{setTimeout(()=>resolve(),1500)})
     const runProcess = await checkBoard(true)
     if (runProcess) {
+        ComboCount++
+        console.log('ComboCount', ComboCount)
+        await checkBoard()
+        await removeBlocks()
+        calculatePoints()
+        RemovedBlockCount = 0
+        await new Promise(resolve=>{setTimeout(()=>resolve(),400)})
+        await setBlocks()
+        await new Promise(resolve=>{setTimeout(()=>resolve(),1000)})
         await processing()
     }
     processFinished = true
+    ComboCount = 0
+}
+
+let Points = 0
+
+const calculatePoints = () =>{
+    console.log('calculatePoints',ComboCount, '*',RemovedBlockCount)
+    Points += ComboCount * RemovedBlockCount
+    document.getElementById('score').innerText = "SCORE : " + Points
 }
 
 for (let x = 0 ; x < 9; x++){
@@ -196,7 +225,8 @@ for (let x = 0 ; x < 9; x++){
 setTimeout(async()=>{
     await setBlocks()
     await new Promise(resolve=>{setTimeout(()=>resolve(),1500)})
-    await processing()
+    processFinished = true
+    // await processing()
     // let processingCount = 0
     // let runProcess = true
     // while(runProcess){
@@ -206,4 +236,3 @@ setTimeout(async()=>{
     //     await processing()
     // }
 },1000)
-

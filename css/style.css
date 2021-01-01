@@ -1,5 +1,5 @@
 #game-board{
-    border:1px solid magenta;
+    border:4px ridge PaleGreen;
     display: inline-block;
     width: 450px;
     height: 450px;
@@ -12,8 +12,32 @@
     width: 50px;
     height: 50px;
     padding: 1px;
-    border:1px solid pink;
+    border:15px outset magenta;
     box-sizing: border-box;
-    transition: top 1s,left 1s;
+    transition: top 1s, left 1s, opacity 1s;
     z-index: 500;
+    opacity: 1;
+}
+.block.red{
+    background-color: red;
+    border-color: red;
+}
+.block.blue{
+    background-color: blue;
+    border-color: blue;
+}
+.block.green{
+    background-color: green;
+    border-color: green;
+}
+.block.purple{
+    background-color: gray;
+    border-color: gray;
+}
+.block.magenta{
+    background-color: yellow;
+    border-color: yellow;
+}
+.block.deleted{
+    opacity: 0;
 }
