@@ -4,6 +4,7 @@
     width: 450px;
     height: 450px;
     position: relative;
+    overflow: hidden;
 }
 .block{
     position: absolute;
