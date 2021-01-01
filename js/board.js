@@ -17,6 +17,8 @@ const Around = [
     {x:1, y: 1},
 ]
 
+let processFinished = false
+
 function getRandomInt(min, max) {
     min = Math.ceil(min)
     max = Math.floor(max)
@@ -51,6 +53,9 @@ const createBlock = (x,y, className) => {
 
 let selected = undefined
 const blockOnClick = async (event) => {
+    if (!processFinished){
+        return
+    }
     // const checkRes = await checkChain(Board[x][y])
     // console.log('checkRes', checkRes)
     const x = parseInt(event.target.dataset.x)
@@ -168,6 +173,7 @@ const checkChain = async (self, direction) => {
 }
 
 const processing = async () =>{
+    processFinished = false
     await checkBoard()
     await removeBlocks()
     await setBlocks()
@@ -176,6 +182,7 @@ const processing = async () =>{
     if (runProcess) {
         await processing()
     }
+    processFinished = true
 }
 
 for (let x = 0 ; x < 9; x++){
