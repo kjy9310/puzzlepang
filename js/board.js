@@ -264,7 +264,8 @@ const loadSounds = ()=>{
 const gameOver = () =>{
     CoverNode.style.backgroundColor=""
     CoverNode.style.opacity=".9"
-    MessageNode.innerText="GAME OVER!"
+    MessageNode.innerHTML = "GAME<img src='https://static-cdn.jtvnw.net/emoticons/v1/303220977/1.0'/>OVER!"
+    
     CoverNode.style.display="block"
     Sounds.Myang.pause()
     Sounds.Gameover.play()
