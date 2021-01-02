@@ -302,6 +302,10 @@ CoverNode.style.display="block"
 CoverNode.onclick=(e)=>{
     CoverNode.style.display="none"
     Sounds.Wakeup.play()
+    document.getElementById('mute').onclick=(e)=>{
+        Sounds.Myang.muted = !Sounds.Myang.muted
+        e.target.className = Sounds.Myang.muted?"mute":""
+    }
     setTimeout(async()=>{
         Sounds.Myang.play()
         await setBlocks()
@@ -309,9 +313,4 @@ CoverNode.onclick=(e)=>{
         processFinished = true
     },1000)
     CoverNode.onclick=undefined
-}
-
-document.getElementById('mute').onclick=(e)=>{
-    Sounds.Myang.muted = !Sounds.Myang.muted
-    e.target.className = Sounds.Myang.muted?"mute":""
 }
