@@ -241,30 +241,18 @@ const loadSounds = ()=>{
     const Coins = new Audio('/sounds/Coins.mp3')
     const Pop = new Audio('/sounds/Pop.mp3')
     const Woodpecker = new Audio('/sounds/Woodpecker.mp3')
-    const Wakeup = new Audio('/sounds/Wakeup.mp3')
-    const Myang = new Audio('/sounds/Myang.mp3')
-    const Gameover = new Audio('/sounds/Gameover.mp3')
-    Myang.addEventListener('timeupdate', function(){
-        var buffer = .33
-        if(this.currentTime > this.duration - buffer){
-            this.currentTime = 0
-            this.play()
-        }
-    })
+    
     return {
-        Myang,
         Coins,
         Pop,
         Woodpecker,
-        Wakeup,
-        Gameover
     }
 }
 
 const gameOver = () =>{
     CoverNode.style.backgroundColor=""
     CoverNode.style.opacity=".9"
-    MessageNode.innerHTML = "GAME<img src='https://static-cdn.jtvnw.net/emoticons/v1/303220977/1.0'/>OVER!"
+    MessageNode.innerHTML = "GAME OVER!"
     
     CoverNode.style.display="block"
     Sounds.Myang.pause()
@@ -301,13 +289,11 @@ MessageNode.innerText="START!"
 CoverNode.style.display="block"
 CoverNode.onclick=(e)=>{
     CoverNode.style.display="none"
-    Sounds.Wakeup.play()
     document.getElementById('mute').onclick=(e)=>{
         Sounds.Myang.muted = !Sounds.Myang.muted
         e.target.className = Sounds.Myang.muted?"mute":""
     }
     setTimeout(async()=>{
-        Sounds.Myang.play()
         await setBlocks()
         await new Promise(resolve=>{setTimeout(()=>resolve(),1500)})
         processFinished = true
