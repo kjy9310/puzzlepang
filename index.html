@@ -4,11 +4,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" type="text/css" href="css/style.css">
-<title>Puzzle Pang</title>
+<title>운빨ㅈㅁ</title>
 </head>
 
 <body>
 	<div id="wrap">
+		<div class="top">
+			<a target="_blank" href="https://www.twitch.tv/ham_90">
+				<img class="link-img" src="https://static-cdn.jtvnw.net/jtv_user_pictures/e323a411-0bdc-42d9-88ee-c5cb5f2daeef-profile_image-70x70.png"/>
+			</a>
+			<span class="title">Game</span><div id="mute"></div>
+		</div>
+		<!--info-->
+		<div id="gamedata">
+			<div>Score : <span id="score"></span></div>
+			<div>MaxCombo : <span id="max-combo"></span></div>
+			<div>Move : <span id="move">5</span></div>
+		</div>
+
 		<div id="inner">
 			<!--game-->
 			<div id="game">
@@ -18,13 +31,16 @@
 			</div>
 			<!--cover-->
 			<div id="cover">
-				<span id="message"></span>
+				<span>
+					<span id="message"></span>
+				</span>
 			</div>
+			<!--score scrolling-->
+			<div id="score-scroll"></div>
 		</div>
 	</div>
-	<div id="score"></div>
+	
 	<!--Scripts-->
 	<script type="text/javascript" src="js/board.js"></script>
-	
 </body>
 </html>

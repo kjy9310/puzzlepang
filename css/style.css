@@ -1,17 +1,85 @@
+@font-face {
+    font-family: aolloyink;
+    src: url("/AlloyInk-lgdWw.otf") format("opentype");
+}
+body{
+    font-family: aolloyink;
+    margin:0;
+    height:100%;
+    background-color: rgb(255, 227, 247);
+}
+.link-img{
+    width:50px;
+    height:50px;
+    margin: 6px 20px;
+    left: 0;
+    position: absolute;
+    border-radius: 25px;
+    border:3px solid pink;
+}
+#cover>span{
+    font-size: 30px;
+    color: rgb(255, 121, 255);
+    background-color: rgba(255,255,255,0.7);
+    border: 24px solid rgba(255,255,255,0.2);
+    border-radius: 50px;
+}
+#message{
+    display: inline-block;
+}
+.top{
+    position: relative;
+    background-color: rgb(255, 204, 255);
+    border-radius: 10px;
+    width:100%;
+    min-height:66px;
+}
+.title{
+    color:white;
+    font-size: 50px;
+    line-height: 66px;
+}
+#mute{
+    width:55px;
+    height:55px;
+    background-color: white;
+    background-image: url("/images/speaker.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 10px;
+    display: inline-block;
+    margin: 5px;
+    right: 0;
+    position: absolute;
+}
+#mute.mute{
+    background-color: pink;
+    opacity: .5;
+}
 #wrap{
+    height:100%;
     text-align: center;
 }
 #inner{
+    bottom:0;
     position: relative;
-    width:458px;
-    height:458px;
+    /* width:458px;
+    height:458px; */
     display: inline-block;
 }
+#gamedata{
+    color:rgb(255, 121, 255);
+    padding: 10px;
+}
+#gamedata div{
+    padding: 10px;
+}
 #game-board{
-    border:4px ridge PaleGreen;
+    border:5px solid rgb(255, 204, 255);
+    border-radius: 5px;
     display: inline-block;
-    width: 450px;
-    height: 450px;
+    /* width: 450px;
+    height: 450px; */
     position: relative;
     overflow: hidden;
 }
@@ -24,7 +92,21 @@
     top: 0;
     left: 0;
     z-index: 1000;
-    display: none;
+}
+#score-scroll{
+    color:#ff7cff;
+    font-size: 40px;
+    position: absolute;
+    bottom:0px;
+    opacity: 1;
+    transition: bottom 1s, opacity 1s;
+    z-index: 1001;
+    text-align: center;
+    width: 100%;
+}
+#score-scroll.up{
+    bottom:100px;
+    opacity: .6;
 }
 .block{
     position: absolute;
@@ -32,31 +114,39 @@
     width: 50px;
     height: 50px;
     padding: 1px;
-    border:15px outset magenta;
+    border: 5px outset magenta;
     box-sizing: border-box;
     transition: top 1s, left 1s, opacity 1s;
     z-index: 500;
     opacity: 1;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: #ffa2df;
 }
 .block.red{
-    background-color: red;
-    border-color: red;
+    /* background-color: red; */
+    border-color: #8a7a76;
+    background-image: url("https://static-cdn.jtvnw.net/emoticons/v1/303220996/1.0");
 }
 .block.blue{
-    background-color: blue;
-    border-color: blue;
+    /* background-color: blue; */
+    border-color: #fbb09f;
+    background-image: url("https://static-cdn.jtvnw.net/emoticons/v1/303227993/1.0");
 }
 .block.green{
-    background-color: green;
-    border-color: green;
+    /* background-color: green; */
+    border-color: #fd0730;
+    background-image: url("https://static-cdn.jtvnw.net/emoticons/v1/303227991/1.0");
 }
 .block.purple{
-    background-color: gray;
-    border-color: gray;
+    /* background-color: gray; */
+    border-color: #ebecec;
+    background-image: url("https://static-cdn.jtvnw.net/emoticons/v1/303220984/1.0");
 }
 .block.magenta{
-    background-color: yellow;
+    /* background-color: yellow; */
     border-color: yellow;
+    background-image: url("https://static-cdn.jtvnw.net/emoticons/v1/303127884/1.0");
 }
 .block.deleted{
     opacity: 0;

@@ -1,8 +1,13 @@
 // width
-const MaxX = 9
+const MaxX = 7
 
 // height
-const MaxY = 9
+const MaxY = 7
+document.getElementById("inner").style.width=`${MaxX*50+10}px`
+document.getElementById("inner").style.height=`${MaxY*50+10}px`
+document.getElementById("game-board").style.width=`${MaxX*50}px`
+document.getElementById("game-board").style.height=`${MaxY*50}px`
+document.getElementById('message').style.lineHeight=`${MaxY*50}px`
 // x -> bottom to top
 // y -> left to right
 let Board = []
@@ -32,9 +37,19 @@ let processFinished = false
 
 let ComboCount = 0
 
+let MaximumCombo = 0
+
 let RemovedBlockCount = 0
 
 let Points = 0
+
+let MoveCount = 5
+
+const CoverNode = document.getElementById('cover')
+
+const MessageNode = document.getElementById('message')
+
+const ScoreScroll = document.getElementById('score-scroll')
 
 function getRandomInt(min, max) {
     min = Math.ceil(min)
@@ -61,7 +76,7 @@ const createBlock = (x,y, className) => {
 }
 
 const blockOnClick = async (event) => {
-    if (!processFinished){
+    if (!processFinished || MoveCount<1){
         return
     }
     const x = parseInt(event.target.dataset.x)
@@ -69,7 +84,11 @@ const blockOnClick = async (event) => {
     Sounds.Pop.play()
     if (selected===undefined){
         selected = Board[x][y]
-        selected.div.style.border="15px inset white"
+        selected.div.style.border="10px inset violet"
+    } else if (selected === Board[x][y]) {
+        selected.div.style.border=""
+        selected=undefined
+        return
     } else {
         selected.div.style.border=""
         const temp = Board[x][y]
@@ -88,15 +107,22 @@ const blockOnClick = async (event) => {
         
         selected = undefined
         await setBlocks()
+        updateMoveCount(-1)
+        processFinished = false
         setTimeout(()=>processing(),1100)
     }
+}
+
+const updateMoveCount = (count) =>{
+    MoveCount+=count
+    document.getElementById('move').innerText=MoveCount
 }
 
 const setBlocks = () =>{
     return new Promise(resolve=>{
         for (let x = 0 ; x < MaxX; x++){
             for (let y = MaxY-1; y >= 0; y--){
-                Board[x][y].div.style.top = `${400-50*y}px`
+                Board[x][y].div.style.top = `${(50*(MaxY-1))-50*y}px`
                 Board[x][y].div.style.left = `${50*x}px`
                 Board[x][y].div.dataset.x = x
                 Board[x][y].x = x
@@ -143,6 +169,7 @@ const removeBlocks = () =>{
                 Board[i].push(createBlock(i, j, 'block block-box'))
             }
         }
+        RemovedBlockCount>7 && updateMoveCount(1)
         resolve()
     })
 }
@@ -181,12 +208,18 @@ const checkChain = async (self, direction) => {
     }   
 }
 
-
 const processing = async () =>{
-    processFinished = false
+    MessageNode.innerText=""
+    CoverNode.style.backgroundColor="transparent"
+    CoverNode.style.opacity="1"
+    CoverNode.style.display="block"
     const runProcess = await checkBoard(true)
     if (runProcess) {
         ComboCount++
+        if (MaximumCombo<ComboCount){
+            MaximumCombo = ComboCount
+            document.getElementById('max-combo').innerText=MaximumCombo
+        }
         await checkBoard()
         await removeBlocks()
         calculatePoints()
@@ -195,55 +228,89 @@ const processing = async () =>{
         await setBlocks()
         await new Promise(resolve=>{setTimeout(()=>resolve(),1000)})
         await processing()
+    } else if (MoveCount<1) {
+        gameOver()
+        return
     }
+    CoverNode.style.display="none"
     processFinished = true
     ComboCount = 0
 }
 
 const loadSounds = ()=>{
-    const Myang = new Audio('/sounds/Myang.mp3')
     const Coins = new Audio('/sounds/Coins.mp3')
     const Pop = new Audio('/sounds/Pop.mp3')
     const Woodpecker = new Audio('/sounds/Woodpecker.mp3')
     const Wakeup = new Audio('/sounds/Wakeup.mp3')
+    const Myang = new Audio('/sounds/Myang.mp3')
+    const Gameover = new Audio('/sounds/Gameover.mp3')
+    Myang.addEventListener('timeupdate', function(){
+        var buffer = .33
+        if(this.currentTime > this.duration - buffer){
+            this.currentTime = 0
+            this.play()
+        }
+    })
     return {
         Myang,
         Coins,
         Pop,
         Woodpecker,
-        Wakeup
+        Wakeup,
+        Gameover
     }
 }
 
+const gameOver = () =>{
+    CoverNode.style.backgroundColor=""
+    CoverNode.style.opacity=".9"
+    MessageNode.innerText="GAME OVER!"
+    CoverNode.style.display="block"
+    Sounds.Myang.pause()
+    Sounds.Gameover.play()
+}
+
 const calculatePoints = () =>{
-    console.log('calculatePoints',ComboCount, '*',RemovedBlockCount)
+    ScoreScroll.style.visibility="visible"
+    ScoreScroll.innerText="+"+ComboCount * RemovedBlockCount
+    ScoreScroll.className="up"
+    setTimeout(()=>{
+        ScoreScroll.className=""
+        ScoreScroll.style.visibility="hidden"
+    },800)
     Points += ComboCount * RemovedBlockCount
+    MessageNode.style.fontSize=`${20+2*ComboCount}px`
+    MessageNode.style.transform=`rotate(${(getRandomInt(0,2)>0?-2:1)*getRandomInt(1,10)}deg)`
+    MessageNode.innerText=ComboCount>1?ComboCount+" Combo!!\n":"Myang!!"
     Sounds.Coins.play()
-    document.getElementById('score').innerText = "SCORE : " + Points
+    document.getElementById('score').innerText = Points
     RemovedBlockCount = 0
 }
 
 // initialize
 let Sounds = loadSounds()
 
-for (let x = 0 ; x < 9; x++){
+for (let x = 0 ; x < MaxX; x++){
     Board[x]=[]
-    for (let y = 8; y >= 0; y--){
+    for (let y = MaxY-1; y >= 0; y--){
         Board[x][y] = createBlock(x, y, 'block block-box')
     }
 }
-document.getElementById('cover').style.display="block"
-document.getElementById('cover').onclick=(e)=>{
-    document.getElementById('cover').style.display=""
+MessageNode.innerText="START!"
+CoverNode.style.display="block"
+CoverNode.onclick=(e)=>{
+    CoverNode.style.display="none"
     Sounds.Wakeup.play()
-    Sounds.Myang.loop=true
-    
     setTimeout(async()=>{
         Sounds.Myang.play()
         await setBlocks()
         await new Promise(resolve=>{setTimeout(()=>resolve(),1500)})
         processFinished = true
-    },1000)    
+    },1000)
+    CoverNode.onclick=undefined
 }
 
-
+document.getElementById('mute').onclick=(e)=>{
+    Sounds.Myang.muted = !Sounds.Myang.muted
+    e.target.className = Sounds.Myang.muted?"mute":""
+}
