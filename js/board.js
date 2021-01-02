@@ -3,7 +3,8 @@ const MaxX = 9
 
 // height
 const MaxY = 9
-
+// x -> bottom to top
+// y -> left to right
 let Board = []
 
 const Around = [
@@ -25,7 +26,15 @@ const typeToShape = {
     5:"purple",
 }
 
+let selected = undefined
+
 let processFinished = false
+
+let ComboCount = 0
+
+let RemovedBlockCount = 0
+
+let Points = 0
 
 function getRandomInt(min, max) {
     min = Math.ceil(min)
@@ -33,11 +42,7 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min
 }
 
-// x -> bottom to top
-// y -> left to right
-
 const createBlock = (x,y, className) => {
-    // starting x is alway top
     const type = getRandomInt(1, 6)
     const div = document.createElement('div')
     div.className = className + " " + typeToShape[type]
@@ -45,7 +50,6 @@ const createBlock = (x,y, className) => {
     div.style.top = `${-50*y}px`//`${x*50}px`
     div.dataset.x = x
     div.dataset.y = y
-    // div.innerText = type
     div.onclick = blockOnClick
     document.getElementById('game-board').appendChild(div)
     return {
@@ -53,21 +57,16 @@ const createBlock = (x,y, className) => {
         y,
         type,
         div,
-        deleteFlag:false,
-        // moveBlock
     }
 }
 
-let selected = undefined
 const blockOnClick = async (event) => {
     if (!processFinished){
         return
     }
-    // const checkRes = await checkChain(Board[x][y])
-    // console.log('checkRes', checkRes)
     const x = parseInt(event.target.dataset.x)
     const y = parseInt(event.target.dataset.y)
-    
+    Sounds.Pop.play()
     if (selected===undefined){
         selected = Board[x][y]
         selected.div.style.border="15px inset white"
@@ -94,10 +93,9 @@ const blockOnClick = async (event) => {
 }
 
 const setBlocks = () =>{
-    // loop array and set x,y with top left
     return new Promise(resolve=>{
-        for (let x = 0 ; x < 9; x++){
-            for (let y = 8; y >= 0; y--){
+        for (let x = 0 ; x < MaxX; x++){
+            for (let y = MaxY-1; y >= 0; y--){
                 Board[x][y].div.style.top = `${400-50*y}px`
                 Board[x][y].div.style.left = `${50*x}px`
                 Board[x][y].div.dataset.x = x
@@ -110,12 +108,12 @@ const setBlocks = () =>{
     })
 }
 
-const checkBoard = (need2Run)=>new Promise(async resolve=>{
+const checkBoard = (pangCheck)=>new Promise(async resolve=>{
     for (let i = 0 ; i < Board.length; i++){
         for (let j = 0 ; j < Board[i].length; j++){
             const check = Board[i][j] && await checkChain(Board[i][j])
             if (check){
-                if (need2Run) {
+                if (pangCheck) {
                     resolve(true)
                 }
                 Board[i][j].delete = "1"
@@ -125,10 +123,9 @@ const checkBoard = (need2Run)=>new Promise(async resolve=>{
     resolve(false)
 })
 
-let RemovedBlockCount = 0
-
 const removeBlocks = () =>{
     return new Promise(resolve=>{
+        Sounds.Woodpecker.play()
         for (let i = 0 ; i < Board.length; i++){
             let newArray = []
             for (let j = 0 ; j < Board[i].length; j++){
@@ -142,11 +139,10 @@ const removeBlocks = () =>{
                 }
             }
             Board[i] = newArray
-            for (let j= Board[i].length; j<9;j++){
+            for (let j= Board[i].length; j<MaxY;j++){
                 Board[i].push(createBlock(i, j, 'block block-box'))
             }
         }
-        console.log('RemovedBlockCount', RemovedBlockCount)
         resolve()
     })
 }
@@ -185,18 +181,16 @@ const checkChain = async (self, direction) => {
     }   
 }
 
-let ComboCount = 0
 
 const processing = async () =>{
     processFinished = false
     const runProcess = await checkBoard(true)
     if (runProcess) {
         ComboCount++
-        console.log('ComboCount', ComboCount)
         await checkBoard()
         await removeBlocks()
         calculatePoints()
-        RemovedBlockCount = 0
+        
         await new Promise(resolve=>{setTimeout(()=>resolve(),400)})
         await setBlocks()
         await new Promise(resolve=>{setTimeout(()=>resolve(),1000)})
@@ -206,33 +200,50 @@ const processing = async () =>{
     ComboCount = 0
 }
 
-let Points = 0
+const loadSounds = ()=>{
+    const Myang = new Audio('/sounds/Myang.mp3')
+    const Coins = new Audio('/sounds/Coins.mp3')
+    const Pop = new Audio('/sounds/Pop.mp3')
+    const Woodpecker = new Audio('/sounds/Woodpecker.mp3')
+    const Wakeup = new Audio('/sounds/Wakeup.mp3')
+    return {
+        Myang,
+        Coins,
+        Pop,
+        Woodpecker,
+        Wakeup
+    }
+}
 
 const calculatePoints = () =>{
     console.log('calculatePoints',ComboCount, '*',RemovedBlockCount)
     Points += ComboCount * RemovedBlockCount
+    Sounds.Coins.play()
     document.getElementById('score').innerText = "SCORE : " + Points
+    RemovedBlockCount = 0
 }
+
+// initialize
+let Sounds = loadSounds()
 
 for (let x = 0 ; x < 9; x++){
     Board[x]=[]
     for (let y = 8; y >= 0; y--){
         Board[x][y] = createBlock(x, y, 'block block-box')
-        
     }
 }
+document.getElementById('cover').style.display="block"
+document.getElementById('cover').onclick=(e)=>{
+    document.getElementById('cover').style.display=""
+    Sounds.Wakeup.play()
+    Sounds.Myang.loop=true
+    
+    setTimeout(async()=>{
+        Sounds.Myang.play()
+        await setBlocks()
+        await new Promise(resolve=>{setTimeout(()=>resolve(),1500)})
+        processFinished = true
+    },1000)    
+}
 
-setTimeout(async()=>{
-    await setBlocks()
-    await new Promise(resolve=>{setTimeout(()=>resolve(),1500)})
-    processFinished = true
-    // await processing()
-    // let processingCount = 0
-    // let runProcess = true
-    // while(runProcess){
-    //     runProcess = await checkBoard(true)
-    //     processingCount++
-    //     console.log('processingCount', processingCount)
-    //     await processing()
-    // }
-},1000)
+

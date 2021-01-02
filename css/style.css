@@ -1,3 +1,12 @@
+#wrap{
+    text-align: center;
+}
+#inner{
+    position: relative;
+    width:458px;
+    height:458px;
+    display: inline-block;
+}
 #game-board{
     border:4px ridge PaleGreen;
     display: inline-block;
@@ -5,6 +14,17 @@
     height: 450px;
     position: relative;
     overflow: hidden;
+}
+#cover{
+    height:100%;
+    width:100%;
+    background-color: violet;
+    opacity: .7;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    display: none;
 }
 .block{
     position: absolute;
