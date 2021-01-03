@@ -17,11 +17,28 @@ body{
     border-radius: 25px;
     border:3px solid pink;
 }
+.block-info{
+    display: flex;
+    font-size: 45px;
+    line-height: 53px;
+    padding: 5px;
+    border-radius: 20px;
+}
+.block-info.success{
+    background-color: rgb(255, 121, 255);
+    color: white;
+}
+.block-wrap{
+    position:relative;
+    width: 50px;
+    height: 50px;
+}
 #cover>span{
     font-size: 30px;
-    color: rgb(255, 121, 255);
-    background-color: rgba(255,255,255,0.7);
-    border: 24px solid rgba(255,255,255,0.2);
+    color: rgb(255, 255, 255);
+    text-shadow: 5px 5px #ff7cff;
+    /* background-color: rgba(255,255,255,0.7);
+    border: 24px solid rgba(255,255,255,0.2); */
     border-radius: 50px;
 }
 #message{
@@ -68,11 +85,18 @@ body{
     display: inline-block;
 }
 #gamedata{
+    max-width:400px;
     color:rgb(255, 121, 255);
     padding: 10px;
+    display: flex;
+    margin: 0 auto;
 }
-#gamedata div{
+#gamedata #stats div{
     padding: 10px;
+    text-align: left;
+}
+#gamedata #bonuses{
+    flex-grow: 2;
 }
 #game-board{
     border:5px solid rgb(255, 204, 255);
@@ -94,7 +118,8 @@ body{
     z-index: 1000;
 }
 #score-scroll{
-    color:#ff7cff;
+    color: rgb(255, 255, 255);
+    text-shadow: 4px 4px #ff7cff;
     font-size: 40px;
     position: absolute;
     bottom:0px;
@@ -116,7 +141,7 @@ body{
     padding: 1px;
     border: 5px outset magenta;
     box-sizing: border-box;
-    transition: top 1s, left 1s, opacity 1s;
+    transition: top 1s, left 1s, opacity 1s, transform 1s;
     z-index: 500;
     opacity: 1;
     background-repeat: no-repeat;
@@ -150,4 +175,5 @@ body{
 }
 .block.deleted{
     opacity: 0;
+    transform: scale(1.5);
 }

@@ -53,6 +53,22 @@ let Points = 0
 
 let MoveCount = 15
 
+let Bonuses = [
+    {
+        condition:{
+            1:3,
+            2:3
+        },
+        successMultiplier:3
+    },
+    {
+        condition:{
+            any:5,
+        },
+        successMultiplier:2
+    }
+]
+
 const CoverNode = document.getElementById('cover')
 
 const MessageNode = document.getElementById('message')
@@ -65,15 +81,14 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min
 }
 
-const createBlock = (x,y, className) => {
-    const type = getRandomInt(1, 6)
+const createBlock = (x,y, type, className) => {
     const div = document.createElement('div')
     div.className = className + " " + typeToShape[type]
     div.style.left = `${x*50}px`
     div.style.top = `${-50*y}px`//`${x*50}px`
     div.dataset.x = x
     div.dataset.y = y
-    div.onclick = blockOnClick
+    div.onclick = x>-1 && y>-1 && blockOnClick
     document.getElementById('game-board').appendChild(div)
     return {
         x,
@@ -160,12 +175,14 @@ const checkBoard = (pangCheck)=>new Promise(async resolve=>{
 const removeBlocks = () =>{
     return new Promise(resolve=>{
         Sounds.Woodpecker.play()
+        RemovedBlockCount = {}
         for (let i = 0 ; i < Board.length; i++){
             let newArray = []
             for (let j = 0 ; j < Board[i].length; j++){
                 if (Board[i][j]&&Board[i][j].delete==="1"){
-                    RemovedBlockCount++
-                    const targetNode = Board[i][j].div
+                    const target = Board[i][j]
+                    RemovedBlockCount[target.type]=(RemovedBlockCount[target.type]===undefined?0:(RemovedBlockCount[target.type]+1))
+                    const targetNode = target.div
                     targetNode.className+=" deleted"
                     setTimeout(()=>document.getElementById('game-board').removeChild(targetNode),1000)
                 }else{
@@ -174,7 +191,7 @@ const removeBlocks = () =>{
             }
             Board[i] = newArray
             for (let j= Board[i].length; j<MaxY;j++){
-                Board[i].push(createBlock(i, j, 'block block-box'))
+                Board[i].push(createBlock(i, j, getRandomInt(1, 6), 'block block-box'))
             }
         }
         resolve()
@@ -242,7 +259,7 @@ const processing = async () =>{
         await new Promise(resolve=>{setTimeout(()=>resolve(),1000)})
         await processing()
     } else if (MoveCount<1) {
-        gameOver()
+        setTimeout(()=>gameOver(),300)
         return
     }
     CoverNode.style.display="none"
@@ -285,29 +302,99 @@ const gameOver = () =>{
 }
 
 const calculatePoints = () =>{
+    const allRemovedBlockCount = Object.values(RemovedBlockCount).reduce((acc, count)=>acc+count,0)
+    const gainScore = ComboCount * allRemovedBlockCount * checkBonuses()
+    
     ScoreScroll.style.visibility="visible"
-    ScoreScroll.innerText="+"+ComboCount * RemovedBlockCount
+    ScoreScroll.innerText="+"+gainScore
     ScoreScroll.className="up"
     setTimeout(()=>{
         ScoreScroll.className=""
         ScoreScroll.style.visibility="hidden"
     },800)
-    Points += ComboCount * RemovedBlockCount
-    MessageNode.style.fontSize=`${20+2*ComboCount}px`
+    Points += gainScore
+    MessageNode.style.fontSize=`${30+2*ComboCount}px`
     MessageNode.style.transform=`rotate(${(getRandomInt(0,2)>0?-2:1)*getRandomInt(1,10)}deg)`
     MessageNode.innerText=ComboCount>1?ComboCount+" Combo!!\n":"Myang!!"
     Sounds.Coins.play()
     document.getElementById('score').innerText = Points
-    RemovedBlockCount = 0
+    RemovedBlockCount = {}
+}
+
+const checkBonuses = () => {
+    // bonus object condition:{[type]:[min count]} successMultiplier:2
+    return Bonuses.reduce((acc, bonusObject, bonusIndex)=>{
+        const {
+            condition,
+            successMultiplier
+        } = bonusObject
+        const objectKeys = Object.keys(condition)
+        let meetRequirement = true
+        for(let i = 0; i<objectKeys.length; i++){
+            const bonusType = objectKeys[i]
+            const minimumCount = condition[bonusType]
+            if (bonusType !== "any" && (RemovedBlockCount[bonusType]==undefined || RemovedBlockCount[bonusType]<minimumCount)) {
+                meetRequirement = false
+                break;
+            } else if (bonusType === "any" && Object.values(RemovedBlockCount).sort().reverse()[0]<condition[bonusType]) {
+                meetRequirement = false
+                break;
+            }
+        }
+        if (meetRequirement) {
+            const bonusId = "bonus"+bonusIndex
+            document.getElementById(bonusId).className="block-info success"
+            setTimeout(()=>{
+                document.getElementById(bonusId).className="block-info"
+            },300)
+        }
+        return acc * (meetRequirement?successMultiplier:1)
+    },1)
+}
+
+const setBonuses = () => {
+    document.getElementById('bonuses').innerHTML=""
+    Bonuses.forEach((bonusObject, index)=>{
+        const singleBonusInfo = createBonusDiv(bonusObject)
+        singleBonusInfo.id="bonus"+index
+        document.getElementById('bonuses').appendChild(singleBonusInfo)
+    })
+}
+
+const createBonusDiv = (bonusObject) => {
+    const {
+        condition,
+        successMultiplier
+    } = bonusObject
+    const blockInfo = document.createElement('div')
+    blockInfo.className="block-info"
+    Object.keys(condition).forEach((type)=>{
+        const count = condition[type]
+        const block = createBlock(-1, -1, type, 'block block-box')
+        block.div.style.top = "0"
+        block.div.style.left = "0"
+        const singleBlockInfoDiv = document.createElement('div')
+        singleBlockInfoDiv.className = "block-wrap"
+        const text = document.createElement('div')
+        text.innerText=" "+count+" "
+        singleBlockInfoDiv.appendChild(block.div)
+        blockInfo.appendChild(text)
+        blockInfo.appendChild(singleBlockInfoDiv)
+    })
+    const successMultiplierInfo = document.createElement('div')
+    successMultiplierInfo.innerText="=X"+successMultiplier
+    blockInfo.appendChild(successMultiplierInfo)
+    return blockInfo
 }
 
 // initialize
 let Sounds = loadSounds()
 updateMoveCount(0)
+setBonuses()
 for (let x = 0 ; x < MaxX; x++){
     Board[x]=[]
     for (let y = MaxY-1; y >= 0; y--){
-        Board[x][y] = createBlock(x, y, 'block block-box')
+        Board[x][y] = createBlock(x, y, getRandomInt(1, 6), 'block block-box')
     }
 }
 MessageNode.innerText="START!"
