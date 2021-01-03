@@ -313,7 +313,8 @@ const calculatePoints = () =>{
         ScoreScroll.style.visibility="hidden"
     },800)
     Points += gainScore
-    MessageNode.style.fontSize=`${30+2*ComboCount}px`
+    const fontSize = 30+2*ComboCount
+    MessageNode.style.fontSize=`${fontSize>70?70:fontSize}px`
     MessageNode.style.transform=`rotate(${(getRandomInt(0,2)>0?-2:1)*getRandomInt(1,10)}deg)`
     MessageNode.innerText=ComboCount>1?ComboCount+" Combo!!\n":"Myang!!"
     Sounds.Coins.play()
