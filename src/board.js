@@ -181,7 +181,7 @@ const removeBlocks = () =>{
             for (let j = 0 ; j < Board[i].length; j++){
                 if (Board[i][j]&&Board[i][j].delete==="1"){
                     const target = Board[i][j]
-                    RemovedBlockCount[target.type]=(RemovedBlockCount[target.type]===undefined?0:(RemovedBlockCount[target.type]+1))
+                    RemovedBlockCount[target.type]=(RemovedBlockCount[target.type]===undefined?1:(RemovedBlockCount[target.type]+1))
                     const targetNode = target.div
                     targetNode.className+=" deleted"
                     setTimeout(()=>document.getElementById('game-board').removeChild(targetNode),1000)
@@ -333,7 +333,7 @@ const checkBonuses = () => {
         for(let i = 0; i<objectKeys.length; i++){
             const bonusType = objectKeys[i]
             const minimumCount = condition[bonusType]
-            if (bonusType !== "any" && (RemovedBlockCount[bonusType]==undefined || RemovedBlockCount[bonusType]<minimumCount)) {
+            if (bonusType !== "any" && ((RemovedBlockCount[bonusType]===undefined) || RemovedBlockCount[bonusType]<minimumCount)) {
                 meetRequirement = false
                 break;
             } else if (bonusType === "any" && Object.values(RemovedBlockCount).sort().reverse()[0]<condition[bonusType]) {
