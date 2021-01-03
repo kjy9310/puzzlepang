@@ -1,0 +1,33 @@
+{
+  "name": "puzzle_pang_ham90",
+  "version": "0.2.0",
+  "description": "pang4ham90",
+  "main": "index.js",
+  "dependencies": {
+    "clean-webpack-plugin": "^3.0.0",
+    "file-loader": "^6.2.0",
+    "style-loader": "^2.0.0",
+    "url-loader": "^4.1.1"
+  },
+  "devDependencies": {
+    "css-loader": "^5.0.1",
+    "webpack": "^5.11.1",
+    "webpack-cli": "^4.3.1",
+    "webpack-dev-server": "^3.11.1",
+    "webpack-merge": "^5.7.3"
+  },
+  "scripts": {
+    "start": "webpack serve --open --config webpack.dev.js",
+    "build": "webpack --config webpack.prod.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kjy9310/puzzlepang.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kjy9310/puzzlepang/issues"
+  },
+  "homepage": "https://github.com/kjy9310/puzzlepang#readme"
+}

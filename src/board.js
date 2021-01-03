@@ -1,3 +1,11 @@
+
+require('/sounds/Coins.mp3')
+require('/sounds/Woodpecker.mp3')
+require('/sounds/Wakeup.mp3')
+require('/sounds/Myang.mp3')
+require('/sounds/Gameover.mp3')
+require('/sounds/Pop.mp3')
+    
 // width
 const MaxX = 7
 
@@ -43,7 +51,7 @@ let RemovedBlockCount = 0
 
 let Points = 0
 
-let MoveCount = 5
+let MoveCount = 15
 
 const CoverNode = document.getElementById('cover')
 
@@ -169,7 +177,6 @@ const removeBlocks = () =>{
                 Board[i].push(createBlock(i, j, 'block block-box'))
             }
         }
-        RemovedBlockCount>7 && updateMoveCount(1)
         resolve()
     })
 }
@@ -296,7 +303,7 @@ const calculatePoints = () =>{
 
 // initialize
 let Sounds = loadSounds()
-
+updateMoveCount(0)
 for (let x = 0 ; x < MaxX; x++){
     Board[x]=[]
     for (let y = MaxY-1; y >= 0; y--){

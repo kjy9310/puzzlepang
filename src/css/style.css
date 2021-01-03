@@ -1,6 +1,6 @@
 @font-face {
     font-family: aolloyink;
-    src: url("/AlloyInk-lgdWw.otf") format("opentype");
+    src: url("./AlloyInk-lgdWw.otf") format("opentype");
 }
 body{
     font-family: aolloyink;

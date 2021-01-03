@@ -9,10 +9,21 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./:/usr/share/nginx/html
+      - ./build:/usr/share/nginx/html
       # - ./nginx/conf.d/:/etc/nginx/conf.d/default.conf
     networks:
       - puzzle-network
+  nodejs:
+    container_name: node_env
+    image: puzzle_node_env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ".:/app"
+      - "/app/node_modules"
+    tty: true
+    
 #Docker Networks
 networks:
   puzzle-network:
