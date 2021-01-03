@@ -137,7 +137,7 @@ const setBlocks = () =>{
 const checkBoard = (pangCheck)=>new Promise(async resolve=>{
     for (let i = 0 ; i < Board.length; i++){
         for (let j = 0 ; j < Board[i].length; j++){
-            const check = Board[i][j] && await checkChain(Board[i][j])
+            const check = Board[i][j] && Board[i][j].delete !== "1" && await checkChain(Board[i][j])
             if (check){
                 if (pangCheck) {
                     resolve(true)
@@ -184,7 +184,13 @@ const checkChain = async (self, direction) => {
         const checkX = (parseInt(x)+diffX)
         const checkY = (parseInt(y)+diffY)
         const checkObject = Board[checkX]&&Board[checkX][checkY]
-        return (checkObject && checkObject.type === self.type)
+        if (checkObject && checkObject.type === self.type) {
+            Board[checkX][checkY].delete="1"
+            Board[x][y].delete="1"
+            return true
+        } else {
+            return false
+        }
     }else{
         for (let i = 0 ; i < Around.length; i++){
             const {x:diffX, y:diffY} = Around[i]
