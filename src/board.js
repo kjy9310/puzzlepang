@@ -32,11 +32,11 @@ const Around = [
 ]
 
 const typeToShape = {
-    1:"blue",
-    2:"green",
-    3:"red",
-    4:"magenta",
-    5:"purple",
+    1:"first",
+    2:"second",
+    3:"third",
+    4:"forth",
+    5:"fifth",
 }
 
 let selected = undefined
@@ -353,7 +353,10 @@ const checkBonuses = () => {
     },1)
 }
 
-const setBonuses = () => {
+const setBonuses = (newBonusObject) => {
+    if (newBonusObject && Bonuses.length<4){
+        Bonuses.push(newBonusObject)
+    }
     document.getElementById('bonuses').innerHTML=""
     Bonuses.forEach((bonusObject, index)=>{
         const singleBonusInfo = createBonusDiv(bonusObject)
@@ -412,6 +415,7 @@ CoverNode.onclick=(e)=>{
         await setBlocks()
         await new Promise(resolve=>{setTimeout(()=>resolve(),1500)})
         processFinished = true
+        // Sounds.Myang.volume = 0.5;
     },1000)
     CoverNode.onclick=undefined
 }
