@@ -1,6 +1,9 @@
+const __MajorVersionString__ = 0
+const childProcess = require('child_process')
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-
+const __MinorVersionString__ = childProcess.execSync('git rev-list HEAD --count').toString().replace(/\r?\n|\r/g,'');
+const __versionString__ = `${__MajorVersionString__}.${__MinorVersionString__}`
 module.exports = {
   module: {
     rules: [
@@ -32,7 +35,15 @@ module.exports = {
           name: '[path][name].[ext]'
         }
       },
-      
+      {
+        test: /\.(html)$/i,
+        loader: 'string-replace-loader',
+        options: {
+          search: '{version\}',
+          replace: __versionString__,
+          flags: 'gi'
+        }
+      }
     ],
   },
   entry: {
@@ -43,7 +54,7 @@ module.exports = {
     new CleanWebpackPlugin(),
   ],
   output: {
-    filename: '[name].bundle.js',
+    filename: `[name].${__versionString__}.bundle.js`,
     path: path.resolve(__dirname, 'build'),
   },
 };

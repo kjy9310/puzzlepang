@@ -39,13 +39,24 @@ const typeToShape = {
     5:"fifth",
 }
 
+let EachBlocksCount = {
+    1:0,
+    2:0,
+    3:0,
+    4:0,
+    5:0,
+}
+
 let selected = undefined
 
 let processFinished = false
 
 let ComboCount = 0
 
-let MaximumCombo = 0
+DefenseBoardStat = {
+    stage: 1,
+    enemyHitPoints: 10000
+}
 
 let RemovedBlockCount = 0
 
@@ -74,6 +85,8 @@ const CoverNode = document.getElementById('cover')
 const MessageNode = document.getElementById('message')
 
 const ScoreScroll = document.getElementById('score-scroll')
+
+const DefenseBoard = document.getElementById('defense-board')
 
 function getRandomInt(min, max) {
     min = Math.ceil(min)
@@ -107,13 +120,13 @@ const blockOnClick = async (event) => {
     Sounds.Pop.play()
     if (selected===undefined){
         selected = Board[x][y]
-        selected.div.style.border="10px inset violet"
+        selected.div.classList.add("selected")
     } else if (selected === Board[x][y]) {
-        selected.div.style.border=""
+        selected.div.classList.remove("selected");
         selected=undefined
         return
     } else {
-        selected.div.style.border=""
+        selected.div.classList.remove("selected");
         const temp = Board[x][y]
         
         const beforeY = selected.y
@@ -246,17 +259,17 @@ const processing = async () =>{
     const runProcess = await checkBoard(true)
     if (runProcess) {
         ComboCount++
-        if (MaximumCombo<ComboCount){
-            MaximumCombo = ComboCount
-            document.getElementById('max-combo').innerText=MaximumCombo
-        }
+        // if (MaximumCombo<ComboCount){
+        //     MaximumCombo = ComboCount
+        //     document.getElementById('max-combo').innerText=MaximumCombo
+        // }
         await checkBoard()
         await removeBlocks()
         calculatePoints()
-        
         await new Promise(resolve=>{setTimeout(()=>resolve(),400)})
         await setBlocks()
         await new Promise(resolve=>{setTimeout(()=>resolve(),1000)})
+        setStates()
         await processing()
     } else if (MoveCount<1) {
         setTimeout(()=>gameOver(),300)
@@ -302,7 +315,11 @@ const gameOver = () =>{
 }
 
 const calculatePoints = () =>{
-    const allRemovedBlockCount = Object.values(RemovedBlockCount).reduce((acc, count)=>acc+count,0)
+    const allRemovedBlockCount = Object.keys(RemovedBlockCount).reduce((acc, type)=>{
+        const count = RemovedBlockCount[type]
+        EachBlocksCount[type] += count
+        return acc+count
+    },0)
     const gainScore = ComboCount * allRemovedBlockCount * checkBonuses()
     
     ScoreScroll.style.visibility="visible"
@@ -312,14 +329,15 @@ const calculatePoints = () =>{
         ScoreScroll.className=""
         ScoreScroll.style.visibility="hidden"
     },800)
-    Points += gainScore
+    DefenseBoardStat.enemyHitPoints -= gainScore
     const fontSize = 30+2*ComboCount
     MessageNode.style.fontSize=`${fontSize>70?70:fontSize}px`
     MessageNode.style.transform=`rotate(${(getRandomInt(0,2)>0?-2:1)*getRandomInt(1,10)}deg)`
     MessageNode.innerText=ComboCount>1?ComboCount+" Combo!!\n":"Myang!!"
     Sounds.Coins.play()
-    document.getElementById('score').innerText = Points
+    // document.getElementById('score').innerText = Points
     RemovedBlockCount = {}
+    
 }
 
 const checkBonuses = () => {
@@ -351,6 +369,14 @@ const checkBonuses = () => {
         }
         return acc * (meetRequirement?successMultiplier:1)
     },1)
+}
+
+const setBlockStats = () => {
+    Object.keys(EachBlocksCount).forEach((type, index)=>{
+        const count = EachBlocksCount[type]
+        document.getElementById(`stat-${typeToShape[type]}`).innerText = count
+    })
+    // document.getElementById('stat-box').appendChild(statInfo)
 }
 
 const setBonuses = (newBonusObject) => {
@@ -391,9 +417,45 @@ const createBonusDiv = (bonusObject) => {
     return blockInfo
 }
 
+const setDefenseBoard = () => {
+    DefenseBoard.innerText = `${DefenseBoardStat.enemyHitPoints} / ${DefenseBoardStat.stage*10000}`
+    // DefenseBoard.
+
+}
+
+let spellCastable = true
+const activateSpell = (event, type) =>{
+    if (!spellCastable){
+        return
+    }
+    spellCastable = false
+    Sounds.Pop.play()
+    event.target.classList.add('selected')
+    setTimeout(()=>{
+        spellCastable = true
+        event.target.classList.remove('selected')
+    },300)
+    switch(type){
+        case 2:
+            if (EachBlocksCount[2] >10){
+                EachBlocksCount[2] -= 10
+                MoveCount += 1
+            }
+            break;
+        default:
+    }
+    setStates()
+}
+
+const setStates = () => {
+    updateMoveCount(0)
+    setBlockStats()
+    setDefenseBoard()
+}
+
 // initialize
 let Sounds = loadSounds()
-updateMoveCount(0)
+
 setBonuses()
 for (let x = 0 ; x < MaxX; x++){
     Board[x]=[]
@@ -419,3 +481,10 @@ CoverNode.onclick=(e)=>{
     },1000)
     CoverNode.onclick=undefined
 }
+setStates()
+
+document.getElementById("spell-first").onclick=(e)=>activateSpell(e,1)
+document.getElementById("spell-second").onclick=(e)=>activateSpell(e,2)
+document.getElementById("spell-third").onclick=(e)=>activateSpell(e,3)
+document.getElementById("spell-forth").onclick=(e)=>activateSpell(e,4)
+document.getElementById("spell-fifth").onclick=(e)=>activateSpell(e,5)

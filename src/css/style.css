@@ -8,12 +8,29 @@ div{
     --block-color-2: #fbb09f;
     --block-color-3: #fd0730;
     --block-color-4: #ebecec;
-    --block-color-5: yellow;
+    --block-color-5: #fc8374;
+    /* ham90Blackcow */
     --block-background-image-1: url("https://static-cdn.jtvnw.net/emoticons/v1/303220996/1.0");
+    /* ham90Um  */
     --block-background-image-2: url("https://static-cdn.jtvnw.net/emoticons/v1/303227993/1.0");
+    /* ham90S2  */
     --block-background-image-3: url("https://static-cdn.jtvnw.net/emoticons/v1/303227991/1.0");
+    /* ham90Nanaemote */
     --block-background-image-4: url("https://static-cdn.jtvnw.net/emoticons/v1/303220984/1.0");
-    --block-background-image-5: url("https://static-cdn.jtvnw.net/emoticons/v1/303127884/1.0");
+    /* ham90Oh */
+    /* https://static-cdn.jtvnw.net/emoticons/v1/303127884/1.0 */
+    /* ham90Rip */
+    /* https://static-cdn.jtvnw.net/emoticons/v1/303127853/1.0 */
+    /* ham90Sibal */
+    /* https://static-cdn.jtvnw.net/emoticons/v1/303227981/1.0 */
+    --block-background-image-5: url("https://static-cdn.jtvnw.net/emoticons/v1/303227981/1.0");
+    /* ham90Dab */
+    /* https://static-cdn.jtvnw.net/emoticons/v1/303197573/1.0 */
+    /* ham90Ddong */
+    /* https://static-cdn.jtvnw.net/emoticons/v1/303220977/1.0 */
+    --background-image-poop: url("https://static-cdn.jtvnw.net/emoticons/v1/303220977/1.0")
+    /* ham90Hamface */
+    /* https://static-cdn.jtvnw.net/emoticons/v1/300804047/1.0 */
 }
 
 /* variables end */
@@ -27,11 +44,6 @@ body{
     margin:0;
     height:100%;
     background-color: rgb(255, 227, 247);
-}
-#animation{
-    height: 16vh;
-    max-width: 600px;
-    margin:0 auto;
 }
 .link-img{
     width:50px;
@@ -56,13 +68,12 @@ body{
     position:relative;
     width: var(--block-size);
     height: var(--block-size);
+    margin: 0 auto;
 }
 #cover>span{
     font-size: 30px;
     color: rgb(255, 255, 255);
     text-shadow: 5px 5px #ff7cff;
-    /* background-color: rgba(255,255,255,0.7);
-    border: 24px solid rgba(255,255,255,0.2); */
     border-radius: 50px;
 }
 #message{
@@ -104,8 +115,6 @@ body{
 #inner{
     bottom:0;
     position: relative;
-    /* width:458px;
-    height:458px; */
     display: inline-block;
 }
 #gamedata{
@@ -117,10 +126,12 @@ body{
 #gamedata #stats{
     display: flex;
     justify-content: space-evenly;
+    transform: scale(.4) translate(0%,-80%);
+    max-height: 40px;
 }
 #gamedata #stats div{
     padding: 0 10px;
-    text-align: left;
+    font-size: 45px;
 }
 #gamedata #bonuses{
     transform: scale(.4) translate(-80%,-80%);
@@ -130,8 +141,6 @@ body{
     border:5px solid rgb(255, 204, 255);
     border-radius: 5px;
     display: inline-block;
-    /* width: 450px;
-    height: 450px; */
     position: relative;
     overflow: hidden;
 }
@@ -169,7 +178,7 @@ body{
     padding: 1px;
     border: 5px outset magenta;
     box-sizing: border-box;
-    transition: top 1s, left 1s, opacity 1s, transform 1s;
+    transition: top 1s, left 1s, opacity 1s, transform 1s, border .3s ease-in-out;
     z-index: 500;
     opacity: 1;
     background-repeat: no-repeat;
@@ -199,6 +208,10 @@ body{
 .block.deleted{
     opacity: 0;
     transform: scale(1.5);
+}
+.block.selected{
+    border-width: 7px;
+    border-style: inset;
 }
 .reward-layer{
     top: 100px;
@@ -235,4 +248,33 @@ body{
     height: 280px;
     background-color: royalblue;
     transform: rotate(-20deg);
+}
+.gamedata-top-box{
+    display: flex;
+}
+.bonus-box {
+    width: 100px;
+    height:100px;
+}
+#block-counts{
+    display: flex;
+    font-size: 45px;
+    line-height: 50px;
+}
+#block-counts span{
+    min-width: 100px;
+    display: inline-block;
+}
+.spell-box{
+    display: flex;
+    align-content: space-evenly;
+}
+#defense-board{
+    height: 16vh;
+    max-width: 600px;
+    margin:0 auto;
+    position: relative;
+}
+.defense-enemy{
+    background-image: var(--background-image-poop);
 }

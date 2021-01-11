@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- <link rel="stylesheet" type="text/css" href="css/style.css"> -->
-<title>운빨ㅈㅁ</title>
+<title>운빨ㅈㅁ {version}</title>
 </head>
 
 <body>
@@ -15,18 +15,77 @@
 			</a>
 			<span class="title">Game</span><div id="mute"></div>
 		</div>
-		<div id="animation">
-
+		<div id="defense-board">
+			<div class="defense-enemy"></div>
 		</div>
 		<!--info-->
 		<div id="gamedata">
-			<div id="bonuses">
-				ham1 x 5 => X 2
+			<div class="gamedata-top-box">
+				<div class="bonus-box">
+					<div id="bonuses">
+						ham1 x 5 => X 2
+					</div>		
+				</div>
+				<div class="spell-box">
+					<div class="block-wrap">
+						<div 
+							id="spell-first"
+							class="block first"
+							style="left:0;"
+						></div>
+					</div>
+					<div class="block-wrap">
+						<div
+							id="spell-second"
+							class="block second"
+							style="left:0;"
+						></div>
+					</div>
+					<div class="block-wrap">
+						<div id="spell-third" class="block third" style="left:0;"></div>
+					</div>
+					<div class="block-wrap">
+						<div id="spell-forth" class="block forth" style="left:0;"></div>
+					</div>
+					<div class="block-wrap">
+						<div id="spell-fifth" class="block fifth" style="left:0;"></div>
+					</div>
+				</div>
 			</div>
 			<div id="stats">
-				<div>Score : <span id="score"></span></div>
-				<div>MaxCombo : <span id="max-combo"></span></div>
-				<div>Move : <span id="move">5</span></div>
+				<div id="block-counts">
+					<div class="block-count-single">
+						<div class="block-wrap">
+							<div class="block first" style="left:0;"></div>
+						</div>
+						<span id="stat-first">0</span>
+					</div>
+					<div class="block-count-single">
+						<div class="block-wrap">
+							<div class="block second" style="left:0;"></div>
+						</div>
+						<span id="stat-second">0</span>
+					</div>
+					<div class="block-count-single">
+						<div class="block-wrap">
+							<div class="block third" style="left:0;"></div>
+						</div>
+						<span id="stat-third">0</span>
+					</div>
+					<div class="block-count-single">
+						<div class="block-wrap">
+							<div class="block forth" style="left:0;"></div>
+						</div>
+						<span id="stat-forth">0</span>
+					</div>
+					<div class="block-count-single">
+						<div class="block-wrap">
+							<div class="block fifth" style="left:0;"></div>
+						</div>
+						<span id="stat-fifth">0</span>
+					</div>
+				</div>
+				<div>Move  <span id="move">5</span></div>
 			</div>
 		</div>
 
@@ -58,7 +117,6 @@
 	</div>
 	
 	<!--Scripts-->
-	<!-- <script type="text/javascript" src="js/board.js"></script> -->
-	<script type="text/javascript" src="app.bundle.js"></script>
+	<script type="text/javascript" src="app.{version}.bundle.js"></script>
 </body>
 </html>
