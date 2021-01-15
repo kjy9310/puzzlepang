@@ -505,8 +505,8 @@ const activateSpell = async (event, type) =>{
     },300)
     switch(type){
         case 1:
-            if (EachBlocksCount[1] >= 0){
-                EachBlocksCount[1] -= 0
+            if (EachBlocksCount[1] >= 10){
+                EachBlocksCount[1] -= 10
                 console.log('EnemyArray',EnemyArray)
                 document.getElementById('blackcow-animation').classList.add('active')
 
