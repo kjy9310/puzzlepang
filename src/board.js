@@ -58,14 +58,15 @@ let ComboCount = 0
 DefenseBoardStat = {
     stage: 0,
     enemyHitPoints: 1,
-    stageMaxHp:1
+    stageMaxHp:1,
+    enemySpeed: 1000
 }
 
 let RemovedBlockCount = 0
 
 let Life = 3
 
-let MoveCount = 15
+let MoveCount = 10
 
 let Bonuses = [
     {
@@ -456,7 +457,7 @@ const createEnemy = () =>{
     enemyDiv.style.bottom = getRandomInt(30,65)+"px"
     const interval = setInterval(()=>{
         const newXdata = parseInt(enemyDiv.dataset.x) + 1
-        if (newXdata > 90){
+        if (newXdata > 85){
             enemyDiv.classList.add("deleted")
             Sounds.Appayo.play()
             setTimeout(()=>{
@@ -470,7 +471,7 @@ const createEnemy = () =>{
         }
         enemyDiv.dataset.x = newXdata
         enemyDiv.style.left = newXdata+"%"
-    },1000)
+    }, DefenseBoardStat.enemySpeed)
     EnemyArray[index]={
         enemyDiv,
         interval
@@ -483,6 +484,7 @@ const setStage = () => {
     const stageMaxHp = 3000 * Math.pow(DefenseBoardStat.stage, .5)
     DefenseBoardStat.enemyHitPoints = stageMaxHp
     DefenseBoardStat.stageMaxHp = stageMaxHp
+    DefenseBoardStat.enemySpeed = 1000 * Math.pow(DefenseBoardStat.stage, -.065)
     createEnemy()
     EnemyInterval = setInterval(()=>createEnemy(), 60060 * Math.pow(DefenseBoardStat.stage, -.1))
     StageReady = true
@@ -601,7 +603,7 @@ const clearStage = () => {
     })
     StageReady=false
     DefenseBoardStat.stage += 1
-    MoveCount++
+    MoveCount+=5
     if (DefenseBoardStat.stage>1){
         document.getElementById('reward').style.display="block"
         document.getElementById('reward-box').innerText="STAGE CLEAR!"
