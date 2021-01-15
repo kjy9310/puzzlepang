@@ -264,10 +264,6 @@ const processing = async () =>{
     const runProcess = await checkBoard(true)
     if (runProcess) {
         ComboCount++
-        // if (MaximumCombo<ComboCount){
-        //     MaximumCombo = ComboCount
-        //     document.getElementById('max-combo').innerText=MaximumCombo
-        // }
         await checkBoard()
         await removeBlocks()
         calculatePoints()
@@ -277,10 +273,6 @@ const processing = async () =>{
         setStates()
         await processing()
     } 
-    // else if (MoveCount<1) {
-    //     setTimeout (()=>gameOver(),300)
-    //     return
-    // }
     CoverNode.style.display="none"
     processFinished = true
     ComboCount = 0
@@ -441,7 +433,7 @@ const setLifeHearts = () => {
 }
 
 const setEnemyHitPoints = () =>{
-    if (DefenseBoardStat.enemyHitPoints<1) {
+    if (DefenseBoardStat.enemyHitPoints<1 && StageReady) {
         document.getElementById('enemy-main').classList.add('dead')
         clearStage()
     }
@@ -488,11 +480,12 @@ const createEnemy = () =>{
 
 const setStage = () => {
     document.getElementById('stage-number').innerText = DefenseBoardStat.stage
-    const stageMaxHp = 5000 * Math.pow(DefenseBoardStat.stage, .5)
+    const stageMaxHp = 3000 * Math.pow(DefenseBoardStat.stage, .5)
     DefenseBoardStat.enemyHitPoints = stageMaxHp
     DefenseBoardStat.stageMaxHp = stageMaxHp
     createEnemy()
     EnemyInterval = setInterval(()=>createEnemy(), 60060 * Math.pow(DefenseBoardStat.stage, -.1))
+    StageReady = true
     setStates()
 }
 
@@ -542,8 +535,8 @@ const activateSpell = (event, type) =>{
             spellCastable = true
             break;
         case 4:
-            if (EachBlocksCount[4] >= 50){
-                EachBlocksCount[4] -= 50
+            if (EachBlocksCount[4] >= 0){
+                EachBlocksCount[4] -= 0
                 const newEnemyHp = DefenseBoardStat.enemyHitPoints - 8000
                 DefenseBoardStat.enemyHitPoints = newEnemyHp<1? 0 : newEnemyHp  
                 document.getElementById('paw').classList.add('active')
@@ -593,6 +586,8 @@ const setStates = () => {
 
 }
 
+let StageReady = false
+
 const clearStage = () => {
     clearInterval(EnemyInterval)
     EnemyArray.forEach((enemyObject, index)=>{
@@ -604,7 +599,9 @@ const clearStage = () => {
         clearInterval(interval)
         EnemyArray[index]=undefined
     })
+    StageReady=false
     DefenseBoardStat.stage += 1
+    MoveCount++
     if (DefenseBoardStat.stage>1){
         document.getElementById('reward').style.display="block"
         document.getElementById('reward-box').innerText="STAGE CLEAR!"
@@ -612,9 +609,9 @@ const clearStage = () => {
         document.getElementById('reward-box').onclick=()=>{
             document.getElementById('reward').style.display=""
             document.getElementById('enemy-main').classList.remove('dead')
-            setTimeout(()=>setStage(), 1000)
             document.getElementById('reward-line').classList.add('hidden')
             document.getElementById('reward-box').onclick=undefined
+            setStage()
         }
     }else{
         setStage()
