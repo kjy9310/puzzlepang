@@ -20,7 +20,7 @@ div{
     /* ham90Oh */
     --background-image-oh:url("https://static-cdn.jtvnw.net/emoticons/v1/303127884/1.0");
     /* ham90Rip */
-    /* https://static-cdn.jtvnw.net/emoticons/v1/303127853/1.0 */
+    --background-image-rip:url("https://static-cdn.jtvnw.net/emoticons/v1/303127853/1.0");
     /* ham90Sibal */
     --block-background-image-5: url("https://static-cdn.jtvnw.net/emoticons/v1/303227981/1.0");
     /* ham90Dab */
@@ -45,9 +45,9 @@ body{
     background-color: rgb(255, 227, 247);
 }
 .link-img{
-    width:50px;
-    height:50px;
-    margin: 6px 20px;
+    width: 30px;
+    height: 30px;
+    margin: 0 20px;
     left: 0;
     position: absolute;
     border-radius: 25px;
@@ -83,21 +83,21 @@ body{
     background-color: rgb(255, 204, 255);
     border-radius: 10px;
     width:100%;
-    min-height:66px;
+    height: 35px;
 }
 .title{
     color:white;
-    font-size: 50px;
-    line-height: 66px;
+    font-size: 30px;
+    line-height: 40px;
 }
 #mute{
-    width:55px;
-    height:55px;
+    width: 26px;
+    height: 26px;
     background-color: white;
     background-image: url("/images/speaker.png");
     background-repeat: no-repeat;
     background-size: cover;
-    border-radius: 10px;
+    border-radius: 5px;
     display: inline-block;
     margin: 5px;
     right: 0;
@@ -245,10 +245,13 @@ body{
     margin: 0 auto;
     width: 200px;
     height: 280px;
-    background-color: royalblue;
+    color:#fe86c2;
+    font-size: 50px;
     transform: rotate(-20deg);
+    padding: 15px 0;
 }
 .gamedata-top-box{
+    justify-content: space-evenly;
     display: flex;
 }
 .bonus-box {
@@ -484,9 +487,10 @@ body{
     height: 60px;
     top: 30%;
     background-image: var(--background-image-poop);
-    animation-name: enemySwing;
-    animation-duration: 2s;
-    animation-iteration-count: infinite;
     transition: transform 1s;
     opacity: .8;
+}
+
+#enemy-main.dead{
+    background-image: var(--background-image-rip);
 }

@@ -54,8 +54,9 @@ let processFinished = false
 let ComboCount = 0
 
 DefenseBoardStat = {
-    stage: 1,
-    enemyHitPoints: 10000
+    stage: 0,
+    enemyHitPoints: 1,
+    stageMaxHp:1
 }
 
 let RemovedBlockCount = 0
@@ -342,9 +343,7 @@ const calculatePoints = () =>{
     MessageNode.style.transform=`rotate(${(getRandomInt(0,2)>0?-2:1)*getRandomInt(1,10)}deg)`
     MessageNode.innerText=ComboCount>1?ComboCount+" Combo!!\n":"Myang!!"
     Sounds.Coins.play()
-    // document.getElementById('score').innerText = Points
-    RemovedBlockCount = {}
-    
+    RemovedBlockCount = {}    
 }
 
 const checkBonuses = () => {
@@ -383,7 +382,6 @@ const setBlockStats = () => {
         const count = EachBlocksCount[type]
         document.getElementById(`stat-${typeToShape[type]}`).innerText = count
     })
-    // document.getElementById('stat-box').appendChild(statInfo)
 }
 
 const setBonuses = (newBonusObject) => {
@@ -437,7 +435,11 @@ const setLifeHearts = () => {
 }
 
 const setEnemyHitPoints = () =>{
-    const percentage = parseInt((DefenseBoardStat.enemyHitPoints / (DefenseBoardStat.stage * 10000)) * 100)
+    if (DefenseBoardStat.enemyHitPoints<1) {
+        document.getElementById('enemy-main').classList.add('dead')
+        clearStage()
+    }
+    const percentage = parseInt((DefenseBoardStat.enemyHitPoints / (DefenseBoardStat.stageMaxHp)) * 100)
     enemyHitPointsBox.style.width = percentage+"px"
 }
 
@@ -479,6 +481,12 @@ const createEnemy = () =>{
 
 const setStage = () => {
     document.getElementById('stage-number').innerText = DefenseBoardStat.stage
+    const stageMaxHp = 5000 * Math.pow(DefenseBoardStat.stage, .5)
+    DefenseBoardStat.enemyHitPoints = stageMaxHp
+    DefenseBoardStat.stageMaxHp = stageMaxHp
+    createEnemy()
+    EnemyInterval = setInterval(()=>createEnemy(), 60060 * Math.pow(DefenseBoardStat.stage, -.1))
+    setStates()
 }
 
 let spellCastable = true
@@ -527,10 +535,10 @@ const activateSpell = (event, type) =>{
             spellCastable = true
             break;
         case 4:
-            if (EachBlocksCount[4] >= 50){
-                EachBlocksCount[4] -= 50
-                const newEnemyHp = DefenseBoardStat.enemyHitPoints - 2000
-                DefenseBoardStat.enemyHitPoints = newEnemyHp<1? 0 : newEnemyHp
+            if (EachBlocksCount[4] >= 0){
+                EachBlocksCount[4] -= 0
+                const newEnemyHp = DefenseBoardStat.enemyHitPoints - 8000
+                DefenseBoardStat.enemyHitPoints = newEnemyHp<1? 0 : newEnemyHp  
                 document.getElementById('paw').classList.add('active')
                 setTimeout(()=>{
                     spellCastable = true
@@ -545,14 +553,16 @@ const activateSpell = (event, type) =>{
                 EachBlocksCount[5] -= 50
                 document.getElementById('spell-burn').classList.add('active')
                 EnemyArray.forEach((enemyObject, index)=>{
-                    const {
-                        enemyDiv,
-                        interval
-                    } = enemyObject
-                    DefenseBoard.removeChild(enemyDiv)
-                    MoveCount++
-                    clearInterval(interval)
-                    EnemyArray[index]=undefined
+                    if (enemyObject) {
+                        const {
+                            enemyDiv,
+                            interval
+                        } = enemyObject
+                        DefenseBoard.removeChild(enemyDiv)
+                        MoveCount++
+                        clearInterval(interval)
+                        EnemyArray[index]=undefined
+                    }
                 })
                 setTimeout(()=>{
                     document.getElementById('spell-burn').classList.remove('active')
@@ -568,10 +578,39 @@ const activateSpell = (event, type) =>{
 }
 
 const setStates = () => {
+    EnemyArray = EnemyArray.filter((enemyObject)=>enemyObject&&enemyObject.enemyDiv)
     updateMoveCount(0)
     setBlockStats()
     setDefenseBoard()
-    EnemyArray = EnemyArray.filter((enemyObject)=>enemyObject)
+
+}
+
+const clearStage = () => {
+    clearInterval(EnemyInterval)
+    EnemyArray.forEach((enemyObject, index)=>{
+        const {
+            enemyDiv,
+            interval
+        } = enemyObject
+        DefenseBoard.removeChild(enemyDiv)
+        clearInterval(interval)
+        EnemyArray[index]=undefined
+    })
+    DefenseBoardStat.stage += 1
+    if (DefenseBoardStat.stage>1){
+        document.getElementById('reward').style.display="block"
+        document.getElementById('reward-box').innerText="STAGE CLEAR!"
+        document.getElementById('reward-line').classList.remove('hidden')
+        document.getElementById('reward-box').onclick=()=>{
+            document.getElementById('reward').style.display=""
+            document.getElementById('enemy-main').classList.remove('dead')
+            setTimeout(()=>setStage(), 1000)
+            document.getElementById('reward-line').classList.add('hidden')
+            document.getElementById('reward-box').onclick=undefined
+        }
+    }else{
+        setStage()
+    }
 }
 
 // initialize
@@ -601,14 +640,12 @@ CoverNode.onclick=(e)=>{
         // Sounds.Myang.volume = 0.5;
     },1000)
     CoverNode.onclick=undefined
-    createEnemy()
-    setStage()
-    EnemyInterval = setInterval(()=>createEnemy(),60060)
+    document.getElementById("spell-first").onclick=(e)=>activateSpell(e,1)
+    document.getElementById("spell-second").onclick=(e)=>activateSpell(e,2)
+    document.getElementById("spell-third").onclick=(e)=>activateSpell(e,3)
+    document.getElementById("spell-forth").onclick=(e)=>activateSpell(e,4)
+    document.getElementById("spell-fifth").onclick=(e)=>activateSpell(e,5)
+    clearStage()
 }
 setStates()
 
-document.getElementById("spell-first").onclick=(e)=>activateSpell(e,1)
-document.getElementById("spell-second").onclick=(e)=>activateSpell(e,2)
-document.getElementById("spell-third").onclick=(e)=>activateSpell(e,3)
-document.getElementById("spell-forth").onclick=(e)=>activateSpell(e,4)
-document.getElementById("spell-fifth").onclick=(e)=>activateSpell(e,5)
