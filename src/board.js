@@ -535,8 +535,8 @@ const activateSpell = (event, type) =>{
             spellCastable = true
             break;
         case 4:
-            if (EachBlocksCount[4] >= 0){
-                EachBlocksCount[4] -= 0
+            if (EachBlocksCount[4] >= 50){
+                EachBlocksCount[4] -= 50
                 const newEnemyHp = DefenseBoardStat.enemyHitPoints - 8000
                 DefenseBoardStat.enemyHitPoints = newEnemyHp<1? 0 : newEnemyHp  
                 document.getElementById('paw').classList.add('active')
