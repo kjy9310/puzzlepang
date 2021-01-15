@@ -5,6 +5,8 @@ require('/sounds/Wakeup.mp3')
 require('/sounds/Myang.mp3')
 require('/sounds/Gameover.mp3')
 require('/sounds/Pop.mp3')
+require('/sounds/Sibal-1740.mp3')
+require('/sounds/Appayo-2564.mp3')
     
 // width
 const MaxX = 7
@@ -291,6 +293,8 @@ const loadSounds = ()=>{
     const Wakeup = new Audio('/sounds/Wakeup.mp3')
     const Myang = new Audio('/sounds/Myang.mp3')
     const Gameover = new Audio('/sounds/Gameover.mp3')
+    const Sibal = new Audio('/sounds/Sibal-1740.mp3')
+    const Appayo = new Audio('/sounds/Appayo-2564.mp3')
     Myang.addEventListener('timeupdate', function(){
         var buffer = .33
         if(this.currentTime > this.duration - buffer){
@@ -304,7 +308,9 @@ const loadSounds = ()=>{
         Pop,
         Woodpecker,
         Wakeup,
-        Gameover
+        Gameover,
+        Sibal,
+        Appayo
     }
 }
 
@@ -460,6 +466,7 @@ const createEnemy = () =>{
         const newXdata = parseInt(enemyDiv.dataset.x) + 1
         if (newXdata > 90){
             enemyDiv.classList.add("deleted")
+            Sounds.Appayo.play()
             setTimeout(()=>{
                 DefenseBoard.removeChild(enemyDiv)
             },1000)
@@ -552,6 +559,7 @@ const activateSpell = (event, type) =>{
             if (EachBlocksCount[5] >= 50){
                 EachBlocksCount[5] -= 50
                 document.getElementById('spell-burn').classList.add('active')
+                Sounds.Sibal.play()
                 EnemyArray.forEach((enemyObject, index)=>{
                     if (enemyObject) {
                         const {
