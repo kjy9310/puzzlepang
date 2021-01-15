@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 <!-- <link rel="stylesheet" type="text/css" href="css/style.css"> -->
 <title>운빨ㅈㅁ {version}</title>
 </head>
@@ -16,7 +17,16 @@
 			<span class="title">Game</span><div id="mute"></div>
 		</div>
 		<div id="defense-board">
-			<div class="defense-enemy"></div>
+			<div id="enemy-hit-points-box"></div>
+			<div id="stage-number">0</div>
+			<div id="heart-box"></div>
+			<div id="paw">
+				<i class="fa fa-paw"></i>
+			</div>
+			<div id="enemy-main" class="defense-icon"></div>
+			<div id="spell-burn">F I R E !</div>
+			<div class="defense-icon oh-ham"></div>
+			<div class="defense-icon blackcow" id="blackcow-animation"></div>
 		</div>
 		<!--info-->
 		<div id="gamedata">
@@ -33,6 +43,7 @@
 							class="block first"
 							style="left:0;"
 						></div>
+						<div class="spell-cost">-10</div>
 					</div>
 					<div class="block-wrap">
 						<div
@@ -40,15 +51,19 @@
 							class="block second"
 							style="left:0;"
 						></div>
+						<div class="spell-cost">-10</div>
 					</div>
 					<div class="block-wrap">
 						<div id="spell-third" class="block third" style="left:0;"></div>
+						<div class="spell-cost">-50</div>
 					</div>
 					<div class="block-wrap">
 						<div id="spell-forth" class="block forth" style="left:0;"></div>
+						<div class="spell-cost">-50</div>
 					</div>
 					<div class="block-wrap">
 						<div id="spell-fifth" class="block fifth" style="left:0;"></div>
+						<div class="spell-cost">-50</div>
 					</div>
 				</div>
 			</div>

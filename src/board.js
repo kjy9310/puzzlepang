@@ -60,7 +60,7 @@ DefenseBoardStat = {
 
 let RemovedBlockCount = 0
 
-let Points = 0
+let Life = 3
 
 let MoveCount = 15
 
@@ -87,6 +87,8 @@ const MessageNode = document.getElementById('message')
 const ScoreScroll = document.getElementById('score-scroll')
 
 const DefenseBoard = document.getElementById('defense-board')
+const HeartBox = document.getElementById('heart-box')
+const enemyHitPointsBox = document.getElementById('enemy-hit-points-box')
 
 function getRandomInt(min, max) {
     min = Math.ceil(min)
@@ -271,10 +273,11 @@ const processing = async () =>{
         await new Promise(resolve=>{setTimeout(()=>resolve(),1000)})
         setStates()
         await processing()
-    } else if (MoveCount<1) {
-        setTimeout(()=>gameOver(),300)
-        return
-    }
+    } 
+    // else if (MoveCount<1) {
+    //     setTimeout (()=>gameOver(),300)
+    //     return
+    // }
     CoverNode.style.display="none"
     processFinished = true
     ComboCount = 0
@@ -312,6 +315,10 @@ const gameOver = () =>{
     CoverNode.style.display="block"
     Sounds.Myang.pause()
     Sounds.Gameover.play()
+    EnemyArray.forEach((enemyObject)=>{
+        clearInterval(enemyObject.interval)
+    })
+    clearInterval(EnemyInterval)
 }
 
 const calculatePoints = () =>{
@@ -417,10 +424,61 @@ const createBonusDiv = (bonusObject) => {
     return blockInfo
 }
 
-const setDefenseBoard = () => {
-    DefenseBoard.innerText = `${DefenseBoardStat.enemyHitPoints} / ${DefenseBoardStat.stage*10000}`
-    // DefenseBoard.
+const setLifeHearts = () => {
+    if (Life<1) {
+        gameOver()
+    }
+    HeartBox.innerHTML=""
+    for(let i = 0; i < Life; i++){
+        const heart = document.createElement('div')
+        heart.className = "defense-icon heart"
+        HeartBox.appendChild(heart)
+    }
+}
 
+const setEnemyHitPoints = () =>{
+    const percentage = parseInt((DefenseBoardStat.enemyHitPoints / (DefenseBoardStat.stage * 10000)) * 100)
+    enemyHitPointsBox.style.width = percentage+"px"
+}
+
+const setDefenseBoard = () => {
+    setEnemyHitPoints()
+    setLifeHearts()
+}
+
+let EnemyArray = []
+const createEnemy = () =>{
+    const index = EnemyArray.length
+    const enemyDiv = document.createElement('div')
+    enemyDiv.className = "defense-icon enemy"
+    enemyDiv.dataset.x = 0
+    // bottom 30 ~ 70 px
+    enemyDiv.style.bottom = getRandomInt(30,65)+"px"
+    const interval = setInterval(()=>{
+        const newXdata = parseInt(enemyDiv.dataset.x) + 1
+        if (newXdata > 90){
+            enemyDiv.classList.add("deleted")
+            setTimeout(()=>{
+                DefenseBoard.removeChild(enemyDiv)
+            },1000)
+            Life--
+            MoveCount++
+            clearInterval(interval)
+            EnemyArray[index]=undefined
+            setStates()
+        }
+        enemyDiv.dataset.x = newXdata
+        enemyDiv.style.left = newXdata+"%"
+    },1000)
+    EnemyArray[index]={
+        enemyDiv,
+        interval
+    }
+    DefenseBoard.appendChild(enemyDiv)
+}
+
+const setStage = () => {
+    document.getElementById('stage-number').innerText = DefenseBoardStat.stage
 }
 
 let spellCastable = true
@@ -432,14 +490,76 @@ const activateSpell = (event, type) =>{
     Sounds.Pop.play()
     event.target.classList.add('selected')
     setTimeout(()=>{
-        spellCastable = true
         event.target.classList.remove('selected')
     },300)
     switch(type){
+        case 1:
+            if (EachBlocksCount[1] >10){
+                EachBlocksCount[1] -= 10
+                document.getElementById('blackcow-animation').classList.add('active')
+                EnemyArray.forEach((enemyObject, index)=>{
+                    const {enemyDiv} = enemyObject
+                    if (enemyDiv){
+                        const newXdata = parseInt(enemyDiv.dataset.x) - 21
+                        EnemyArray[index].enemyDiv.dataset.x = newXdata<0?0:newXdata
+                    }
+                })
+                setTimeout(()=>{
+                    spellCastable = true
+                    document.getElementById('blackcow-animation').classList.remove('active')
+                }, 3000)
+            } else {
+                spellCastable = true
+            }
+            break;
         case 2:
-            if (EachBlocksCount[2] >10){
+            if (EachBlocksCount[2] >= 10){
                 EachBlocksCount[2] -= 10
                 MoveCount += 1
+            }
+            spellCastable = true
+            break;
+        case 3:
+            if (EachBlocksCount[3] >= 50 && Life<3){
+                EachBlocksCount[3] -= 50
+                Life++
+            }
+            spellCastable = true
+            break;
+        case 4:
+            if (EachBlocksCount[4] >= 50){
+                EachBlocksCount[4] -= 50
+                const newEnemyHp = DefenseBoardStat.enemyHitPoints - 2000
+                DefenseBoardStat.enemyHitPoints = newEnemyHp<1? 0 : newEnemyHp
+                document.getElementById('paw').classList.add('active')
+                setTimeout(()=>{
+                    spellCastable = true
+                    document.getElementById('paw').classList.remove('active')
+                }, 1000)
+            } else {
+                spellCastable = true
+            }
+            break;
+        case 5:
+            if (EachBlocksCount[5] >= 50){
+                EachBlocksCount[5] -= 50
+                document.getElementById('spell-burn').classList.add('active')
+                EnemyArray.forEach((enemyObject, index)=>{
+                    const {
+                        enemyDiv,
+                        interval
+                    } = enemyObject
+                    DefenseBoard.removeChild(enemyDiv)
+                    MoveCount++
+                    clearInterval(interval)
+                    EnemyArray[index]=undefined
+                })
+                setTimeout(()=>{
+                    document.getElementById('spell-burn').classList.remove('active')
+                    spellCastable = true
+                }, 800)
+            } else {
+                spellCastable = true
             }
             break;
         default:
@@ -451,11 +571,12 @@ const setStates = () => {
     updateMoveCount(0)
     setBlockStats()
     setDefenseBoard()
+    EnemyArray = EnemyArray.filter((enemyObject)=>enemyObject)
 }
 
 // initialize
 let Sounds = loadSounds()
-
+let EnemyInterval
 setBonuses()
 for (let x = 0 ; x < MaxX; x++){
     Board[x]=[]
@@ -480,6 +601,9 @@ CoverNode.onclick=(e)=>{
         // Sounds.Myang.volume = 0.5;
     },1000)
     CoverNode.onclick=undefined
+    createEnemy()
+    setStage()
+    EnemyInterval = setInterval(()=>createEnemy(),60060)
 }
 setStates()
 
