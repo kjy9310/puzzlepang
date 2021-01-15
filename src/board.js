@@ -307,7 +307,7 @@ const loadSounds = ()=>{
     }
 }
 
-const gameOver = () =>{
+const gameOver = async () =>{
     CoverNode.style.backgroundColor=""
     CoverNode.style.opacity=".9"
     MessageNode.innerHTML = "GAME<img src='https://static-cdn.jtvnw.net/emoticons/v1/303220977/1.0'/>OVER!"
@@ -315,8 +315,8 @@ const gameOver = () =>{
     CoverNode.style.display="block"
     Sounds.Myang.pause()
     Sounds.Gameover.play()
-    EnemyArray.forEach((enemyObject)=>{
-        clearInterval(enemyObject.interval)
+    await EnemyArray.forEach((enemyObject)=>{
+        enemyObject&&clearInterval(enemyObject.interval)
     })
     clearInterval(EnemyInterval)
 }
@@ -457,7 +457,7 @@ const createEnemy = () =>{
     enemyDiv.style.bottom = getRandomInt(30,65)+"px"
     const interval = setInterval(()=>{
         const newXdata = parseInt(enemyDiv.dataset.x) + 1
-        if (newXdata > 85){
+        if (newXdata > 90){
             enemyDiv.classList.add("deleted")
             Sounds.Appayo.play()
             setTimeout(()=>{
@@ -485,14 +485,15 @@ const setStage = () => {
     DefenseBoardStat.enemyHitPoints = stageMaxHp
     DefenseBoardStat.stageMaxHp = stageMaxHp
     DefenseBoardStat.enemySpeed = 1000 * Math.pow(DefenseBoardStat.stage, -.065)
+    const generationSpeed = 60060 * Math.pow(DefenseBoardStat.stage, -.1)
     createEnemy()
-    EnemyInterval = setInterval(()=>createEnemy(), 60060 * Math.pow(DefenseBoardStat.stage, -.1))
+    EnemyInterval = setInterval(()=>createEnemy(), generationSpeed)
     StageReady = true
     setStates()
 }
 
 let spellCastable = true
-const activateSpell = (event, type) =>{
+const activateSpell = async (event, type) =>{
     if (!spellCastable){
         return
     }
@@ -504,11 +505,14 @@ const activateSpell = (event, type) =>{
     },300)
     switch(type){
         case 1:
-            if (EachBlocksCount[1] >10){
-                EachBlocksCount[1] -= 10
+            if (EachBlocksCount[1] >= 0){
+                EachBlocksCount[1] -= 0
+                console.log('EnemyArray',EnemyArray)
                 document.getElementById('blackcow-animation').classList.add('active')
-                EnemyArray.forEach((enemyObject, index)=>{
+
+                await EnemyArray.forEach((enemyObject, index)=>{
                     const {enemyDiv} = enemyObject
+                    console.log('foreach', index, enemyDiv)
                     if (enemyDiv){
                         const newXdata = parseInt(enemyDiv.dataset.x) - 21
                         EnemyArray[index].enemyDiv.dataset.x = newXdata<0?0:newXdata
@@ -555,7 +559,7 @@ const activateSpell = (event, type) =>{
                 EachBlocksCount[5] -= 50
                 document.getElementById('spell-burn').classList.add('active')
                 Sounds.Sibal.play()
-                EnemyArray.forEach((enemyObject, index)=>{
+                await EnemyArray.forEach((enemyObject, index)=>{
                     if (enemyObject) {
                         const {
                             enemyDiv,
@@ -590,16 +594,18 @@ const setStates = () => {
 
 let StageReady = false
 
-const clearStage = () => {
+const clearStage = async () => {
     clearInterval(EnemyInterval)
-    EnemyArray.forEach((enemyObject, index)=>{
-        const {
-            enemyDiv,
-            interval
-        } = enemyObject
-        DefenseBoard.removeChild(enemyDiv)
-        clearInterval(interval)
-        EnemyArray[index]=undefined
+    await EnemyArray.forEach((enemyObject, index)=>{
+        if (enemyObject){
+            const {
+                enemyDiv,
+                interval
+            } = enemyObject
+            DefenseBoard.removeChild(enemyDiv)
+            clearInterval(interval)
+            EnemyArray[index]=undefined
+        }
     })
     StageReady=false
     DefenseBoardStat.stage += 1
