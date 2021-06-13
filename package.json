@@ -4,22 +4,37 @@
   "description": "pang4ham90",
   "main": "index.js",
   "dependencies": {
+    "@babel/core": "^7.13.8",
+    "@babel/preset-env": "^7.13.9",
+    "@types/jest": "^26.0.20",
+    "@types/node": "^14.14.31",
+    "@types/react": "^17.0.2",
+    "@types/react-dom": "^17.0.1",
+    "babel-cli": "^6.26.0",
+    "babel-loader": "^8.2.2",
+    "babel-preset-react-app": "^3.1.2",
     "clean-webpack-plugin": "^3.0.0",
     "file-loader": "^6.2.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
     "string-replace-loader": "^3.0.1",
     "style-loader": "^2.0.0",
     "url-loader": "^4.1.1"
   },
   "devDependencies": {
+    "@babel/preset-react": "^7.12.13",
     "css-loader": "^5.0.1",
+    "ts-loader": "^8.0.17",
+    "typescript": "^4.2.3",
     "webpack": "^5.11.1",
     "webpack-cli": "^4.3.1",
     "webpack-dev-server": "^3.11.1",
     "webpack-merge": "^5.7.3"
   },
   "scripts": {
-    "start": "webpack serve --open --config webpack.dev.js",
-    "build": "webpack --config webpack.prod.js"
+    "start": "webpack serve --open --host 0.0.0.0 --config webpack.dev.js",
+    "build": "webpack --config webpack.prod.js",
+    "docker": "docker-compose up --remove-orphans"
   },
   "repository": {
     "type": "git",
@@ -30,5 +45,15 @@
   "bugs": {
     "url": "https://github.com/kjy9310/puzzlepang/issues"
   },
-  "homepage": "https://github.com/kjy9310/puzzlepang#readme"
+  "homepage": "https://github.com/kjy9310/puzzlepang#readme",
+  "babel": {
+    "presets": [
+      "@babel/preset-react",
+      "@babel/preset-env"
+    ],
+    "plugins": [
+      "@babel/plugin-transform-modules-commonjs",
+      "@babel/plugin-transform-react-jsx"
+    ]
+  }
 }

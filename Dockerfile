@@ -1,5 +1,7 @@
 FROM node:12
 
+ARG ENV=development
+
 # set working directory
 WORKDIR /app
 
@@ -12,6 +14,12 @@ RUN npm install
 # # RUN npm install react-scripts@3.0.1 -g
 
 # # 앱 실행
-# EXPOSE 8080
+EXPOSE 8080
 
-CMD [ "npm", "run", "build" ]
+RUN if [ "$ENV" = "production" ]; then \
+      echo "npm run build"; \
+  else \
+    echo "npm run start"; \
+  fi
+ 
+# CMD [ "npm", "run", "start" ]

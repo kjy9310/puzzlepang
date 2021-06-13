@@ -43,11 +43,26 @@ module.exports = {
           replace: __versionString__,
           flags: 'gi'
         }
-      }
+      },
+      {
+        test: /\.m?jsx$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env']
+          }
+        }
+      },
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
     ],
   },
   entry: {
-    app: './src/index.js',
+    app: './src/index.tsx',
   },
   plugins: [
     // new CleanWebpackPlugin(['dist/*']) for < v2 versions of CleanWebpackPlugin
