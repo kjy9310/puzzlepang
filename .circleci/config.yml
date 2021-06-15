@@ -1,14 +1,49 @@
 orbs: # declare what orbs we are going to use
   node: circleci/node@2.0.2 # the node orb provides common node-related configuration
+  docker: circleci/docker
 
 version: 2.1 # using 2.1 provides access to orbs and other features
 
+jobs:
+  # matrix-tests:
+  #   jobs:
+  #     - node/test:
+  #         version: 13.11.0
+  #     - node/test:
+  #         version: 12.16.0
+  #     - node/test:
+  #         version: 10.19.0
+ build-test:
+  executor:
+    name: node/default
+  steps:
+    - checkout # download project
+    - node/with-cache:
+      steps:
+        - run: npm install
+        - run: npm test
+  docker:
+    executor: docker/machine
+    steps:
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: npm install
+      - run: docker build -t circleci/puzzlepang .
+      - run: docker save -o circleci-puzzlepang.tar circleci/puzzlepang
+      - add_ssh_keys:	
+        fingerprints:	
+          - "8f:0a:e5:15:4c:29:b3:c8:cd:77:ea:f9:53:5c:d4:86"	
+      - run: rsync -ah -e "ssh -o StrictHostKeyChecking=no" circleci-puzzlepang.tar ubuntu@ec2-15-164-221-90.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/hamgame
+      - run: ssh ubuntu@ec2-15-164-221-90.ap-northeast-2.compute.amazonaws.com "cd /home/ubuntu/hamgame; docker load -i circleci-puzzlepang.tar; docker run circleci/puzzlepang"
+
 workflows:
-  matrix-tests:
-    jobs:
-      - node/test:
-          version: 13.11.0
-      - node/test:
-          version: 12.16.0
-      - node/test:
-          version: 10.19.0
+  build-test:
+   jobs:
+    - build-test
+    - docker:
+      requires:
+        - test
+      filters:	
+        branches:	
+        only: ham90 
