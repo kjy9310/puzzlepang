@@ -1,49 +1,102 @@
-orbs: # declare what orbs we are going to use
-  node: circleci/node@2.0.2 # the node orb provides common node-related configuration
-  docker: circleci/docker
-
-version: 2.1 # using 2.1 provides access to orbs and other features
-
+version: 2.1
+description: >
+  deploy
+orbs:
+  slack: circleci/slack@3.2.0
+  aws-cli: circleci/aws-cli@0.1.20
+  aws-s3: circleci/aws-s3@1.0.11
+executors:
+  default:
+    docker:
+      - image: circleci/node:12.16.3
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          NODE_OPTIONS: --max_old_space_size=2560
+          TZ: "Asia/Tokyo"
+    working_directory: ~/workspace
+commands:
+  init:
+    steps:
+      - attach_workspace:
+          at: .
+  save_workspace:
+    steps:
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
 jobs:
-  # matrix-tests:
-  #   jobs:
-  #     - node/test:
-  #         version: 13.11.0
-  #     - node/test:
-  #         version: 12.16.0
-  #     - node/test:
-  #         version: 10.19.0
- build-test:
-  # executor:
-  #   name: node/default
-  # steps:
-  #   - checkout # download project
-  #   - node/with-cache:
-  #     steps:
-  #       - run: npm install
-  #       - run: npm test
-  docker:
-    executor: docker/machine
+  build:
+    executor: default
     steps:
       - checkout
-      - node/with-cache:
-          steps:
-            - run: npm install
-      - run: docker build -t puzzlepang .
-      - run: docker save -o puzzlepang.tar puzzlepang
-      - add_ssh_keys:
-        fingerprints:
-          - "8f:0a:e5:15:4c:29:b3:c8:cd:77:ea:f9:53:5c:d4:86"
-      - run: rsync -ah -e "ssh -o StrictHostKeyChecking=no" puzzlepang.tar ubuntu@ec2-15-164-221-90.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/hamgame
-      - run: ssh ubuntu@ec2-15-164-221-90.ap-northeast-2.compute.amazonaws.com "cd /home/ubuntu/hamgame; docker load -i puzzlepang.tar; docker run puzzlepang"
+      - init
+      # Load submodules
+      # - run: git submodule sync
+      # - run: git submodule update --init
+      - restore_cache:
+          keys:
+            - v2-dependencies-{{ checksum "package-lock.json" }}
+            - v2-dependencies-
+      - run:
+          name: Install Packages
+          command: npm install
+      - save_cache:
+          paths:
+            - node_modules
+          key: v2-dependencies-{{ checksum "package-lock.json" }}
+      - run:
+          name: Build Packages(S3)
+          command: yarn build
+      - save_workspace
+      - run:
+          name: Failed To Build
+          command: |
+            echo "Failed TO Build the Project";
+          when: on_fail
+  deploy:
+    executor: default
+    parameters:
+      deploy-env:
+        type: enum
+        enum: ["develop", "production"]
+    steps:
+      - init
+      - slack/notify:
+          color: good
+          title: "puzzlepang deploy"
+          # title_link: "${BASE_URL}/branch/${CIRCLE_BRANCH}"
+          message: "Starting to deploy (<< parameters.deploy-env >>)"
+      - run:
+          name: "get date"
+          command: VERSION="$(date +'%Y-%m-%d')"
+      - aws-cli/install
+      - aws-cli/setup
+      - run:
+          name: "Deploy to S3"
+          command: |
+            VERSION="$(date +'%Y-%m-%d')"
+            aws s3 sync ~/workspace/build $BUCKET_NAME
+            aws s3 cp $BUCKET_NAME/$VERSION/index.html $VERSION/index.html --content-type 'text/html; charset=utf-8' --metadata-directive REPLACE
+          #  aws cloudfront create-invalidation --distribution-id ${CF_DISTRIBUTION} --paths '/*'
+      - slack/notify:
+          color: good
+          title: "puzzlepang deploy"
+          message: "Deploy succeeded (<< parameters.deploy-env >>)"
+          footer: "$VERSION"
 
 workflows:
-  build-test:
-   jobs:
-    - build-test
-    - docker:
-      requires:
-        - test
-      filters:
-        branches:
-        only: ham90
+  all:
+    jobs:
+      - build
+      - deploy:
+          name: deploy-develop
+          deploy-env: develop
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - ham90
