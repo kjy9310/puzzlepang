@@ -78,8 +78,8 @@ jobs:
           name: "Deploy to S3"
           command: |
             VERSION="$(date +'%Y-%m-%d')"
-            aws s3 sync ~/workspace/build $BUCKET_NAME
-            aws s3 cp $BUCKET_NAME/$VERSION/index.html $VERSION/index.html --content-type 'text/html; charset=utf-8' --metadata-directive REPLACE
+            aws s3 sync ~/workspace/build ${BUCKET_NAME}
+          # aws s3 cp $BUCKET_NAME/$VERSION/index.html $VERSION/index.html --content-type 'text/html; charset=utf-8' --metadata-directive REPLACE
           #  aws cloudfront create-invalidation --distribution-id ${CF_DISTRIBUTION} --paths '/*'
       - slack/notify:
           color: good
