@@ -1,25 +1,10 @@
-
-require('/sounds/Coins.mp3')
-require('/sounds/Woodpecker.mp3')
-require('/sounds/Wakeup.mp3')
-require('/sounds/Myang.mp3')
-require('/sounds/Gameover.mp3')
-require('/sounds/Pop.mp3')
-require('/sounds/Sibal-1740.mp3')
-require('/sounds/Appayo-2564.mp3')
-    
+const logic = ()=>{
 // width
 const MaxX = 7
 
 // height
 const MaxY = 7
-document.getElementById("inner").style.width=`${MaxX*50+10}px`
-document.getElementById("inner").style.height=`${MaxY*50+10}px`
-document.getElementById("game-board").style.width=`${MaxX*50}px`
-document.getElementById("game-board").style.height=`${MaxY*50}px`
-document.getElementById('message').style.lineHeight=`${MaxY*50}px`
-// x -> bottom to top
-// y -> left to right
+
 let Board = []
 
 const Around = [
@@ -55,7 +40,7 @@ let processFinished = false
 
 let ComboCount = 0
 
-DefenseBoardStat = {
+let DefenseBoardStat = {
     stage: 0,
     enemyHitPoints: 1,
     stageMaxHp:1,
@@ -277,34 +262,6 @@ const processing = async () =>{
     CoverNode.style.display="none"
     processFinished = true
     ComboCount = 0
-}
-
-const loadSounds = ()=>{
-    const Coins = new Audio('/sounds/Coins.mp3')
-    const Pop = new Audio('/sounds/Pop.mp3')
-    const Woodpecker = new Audio('/sounds/Woodpecker.mp3')
-    const Wakeup = new Audio('/sounds/Wakeup.mp3')
-    const Myang = new Audio('/sounds/Myang.mp3')
-    const Gameover = new Audio('/sounds/Gameover.mp3')
-    const Sibal = new Audio('/sounds/Sibal-1740.mp3')
-    const Appayo = new Audio('/sounds/Appayo-2564.mp3')
-    Myang.addEventListener('timeupdate', function(){
-        var buffer = .33
-        if(this.currentTime > this.duration - buffer){
-            this.currentTime = 0
-            this.play()
-        }
-    })
-    return {
-        Myang,
-        Coins,
-        Pop,
-        Woodpecker,
-        Wakeup,
-        Gameover,
-        Sibal,
-        Appayo
-    }
 }
 
 const gameOver = async () =>{
@@ -662,3 +619,5 @@ CoverNode.onclick=(e)=>{
 }
 setStates()
 
+}
+export default logic

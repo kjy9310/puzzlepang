@@ -67,7 +67,6 @@ jobs:
       - slack/notify:
           color: good
           title: "puzzlepang deploy"
-          # title_link: "${BASE_URL}/branch/${CIRCLE_BRANCH}"
           message: "Starting to deploy (<< parameters.deploy-env >>)"
       - run:
           name: "get date"
@@ -79,8 +78,6 @@ jobs:
           command: |
             VERSION="$(date +'%Y-%m-%d')"
             aws s3 sync ~/workspace/build ${BUCKET_NAME}
-          # aws s3 cp $BUCKET_NAME/$VERSION/index.html $VERSION/index.html --content-type 'text/html; charset=utf-8' --metadata-directive REPLACE
-          #  aws cloudfront create-invalidation --distribution-id ${CF_DISTRIBUTION} --paths '/*'
       - slack/notify:
           color: good
           title: "puzzlepang deploy"

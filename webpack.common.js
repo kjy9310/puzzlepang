@@ -72,4 +72,7 @@ module.exports = {
     filename: `[name].${__versionString__}.bundle.js`,
     path: path.resolve(__dirname, 'build'),
   },
+  resolve: {
+    extensions: [".ts", ".tsx", ".js", ".jsx"]
+  }
 };

@@ -16,10 +16,4 @@ RUN npm install
 # # 앱 실행
 EXPOSE 8080
 
-RUN if [ "$ENV" = "production" ]; then \
-      echo "npm run build"; \
-  else \
-    echo "npm run start"; \
-  fi
- 
-# CMD [ "npm", "run", "start" ]
+CMD [ "npm", "run", "start" ]
