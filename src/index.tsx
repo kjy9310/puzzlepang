@@ -30,10 +30,13 @@ ReactDOM.render(
     <DefenseBoard/>
     <DataBoard/>
     <div id="inner" style={innerStyle}>
-      <PuzzleBoard size={{
-        x: MaxX*50,
-        y: MaxY*50
-      }}/>
+      <PuzzleBoard
+      size={{
+        x: MaxX,
+        y: MaxY,
+        blockSize: 50
+      }}
+      />
     </div>
     <Modal/>
   </div>
