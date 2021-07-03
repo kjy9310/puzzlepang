@@ -7,7 +7,7 @@ import DefenseBoard from './components/defense-board';
 import DataBoard from './components/data-board'
 import PuzzleBoard from './components/puzzle-board'
 import Modal from './components/modal'
-import './sound-loader'
+import './sound'
 
 if (process.env.NODE_ENV !== 'production') {
   console.log('Looks like we are in development mode!');

@@ -35,5 +35,5 @@ const loadSounds = ()=>{
         Appayo
     }
 }
-
-window.loadSounds = loadSounds
+const sounds = loadSounds()
+export default sounds

@@ -1,7 +1,9 @@
 import * as React from "react";
-import {useEffect, useState} from "react"
+import {useEffect, useState, useRef} from "react"
 import gamelogic from '../board'
 import Block, {Iblock} from './puzzle-block'
+import sounds from '../sound'
+
 interface Isize{
     x: number,
     y: number,
@@ -21,54 +23,43 @@ const Around = [
     {x:1, y: 1},
 ]
 
-// const blockOnClick = async (event) => {
-//     if (!processFinished || MoveCount<1){
-//         return
-//     }
-//     const x = parseInt(event.target.dataset.x)
-//     const y = parseInt(event.target.dataset.y)
-//     Sounds.Pop.play()
-//     if (selected===undefined){
-//         selected = Board[x][y]
-//         selected.div.classList.add("selected")
-//     } else if (selected === Board[x][y]) {
-//         selected.div.classList.remove("selected");
-//         selected=undefined
-//         return
-//     } else {
-//         selected.div.classList.remove("selected");
-//         const temp = Board[x][y]
-        
-//         const beforeY = selected.y
-//         const beforeX = selected.x
-
-//         temp.x = beforeX
-//         temp.y = beforeY
-
-//         Board[x][y] = selected
-//         Board[x][y].x = x
-//         Board[x][y].y = y
-
-//         Board[beforeX][beforeY] = temp
-        
-//         selected = undefined
-//         await setBlocks()
-//         updateMoveCount(-1)
-//         processFinished = false
-//         setTimeout(()=>processing(),1100)
-//     }
-// }
 function getRandomInt(min, max) {
     min = Math.ceil(min)
     max = Math.floor(max)
     return Math.floor(Math.random() * (max - min)) + min
 }
 
-const blockOnClick = ()=>{}
+function usePrevious(value) {
+    const ref = useRef();
+    useEffect(() => {
+      ref.current = value;
+    });
+    return ref.current;
+  }
 
 const PuzzleBoard = (props:Iprop) => {
     const [puzzleBoard, setPuzzleBoard] = useState([])
-    
+    const [processing, setProcessing] = useState(false)
+    // const [phase, setPhase] = useState(1) //
+    // hasPop, pop, refill
+    // 발동 가능상태인지 함수시작 마다 체크하기
+    // state checking - 상태 단계를 만들어두기
+    // 
+    const [selected, setSelected] = useState(undefined)
+    const prevSelected = usePrevious(selected)
+    const [phase,setPhase] = useState(0)
+    const blockOnClick = async (block?: Iblock) => {
+        if (processing 
+            // || MoveCount<1
+            ){
+            return false
+        }
+        
+        sounds.Pop.play()
+        setSelected(block)
+        return true
+    }
+
     const {size} = props
     const blockSize = size.blockSize
 
@@ -93,7 +84,7 @@ const PuzzleBoard = (props:Iprop) => {
             setPuzzleBoard(puzzleBoardonLoad)
     },[]);
 
-    const calculatePop = async () => {
+    const calculatePop = async (checkOnly=false) => {
         let checkingBoard = puzzleBoard
 
         const checkPop = async (self: Iblock, direction) => {
@@ -101,8 +92,8 @@ const PuzzleBoard = (props:Iprop) => {
             const y = self.y
             
             if (direction) {
-                const opposite = Around[direction]
-                const {x:diffX, y:diffY} = opposite
+                const sameDirection = Around[direction]
+                const {x:diffX, y:diffY} = sameDirection
                 const checkX = (x+diffX)
                 const checkY = (y+diffY)
                 const checkObject = checkingBoard[checkX]&&checkingBoard[checkX][checkY]
@@ -137,12 +128,20 @@ const PuzzleBoard = (props:Iprop) => {
         for (let i = 0 ; i < checkingBoard.length; i++){
             for (let j = 0 ; j < checkingBoard[i].length; j++){
                 const targetBlock = checkingBoard[i][j]
-                checkingBoard[i][j].isPopped = await checkPop(targetBlock,undefined) || false
+                if (checkOnly && await checkPop(targetBlock,undefined)){
+                    return true
+                }else{
+                    checkingBoard[i][j].isPopped = await checkPop(targetBlock,undefined) || false
+                }
+                
             }
         }
-        setPuzzleBoard([...checkingBoard])
+        if(!checkOnly){
+            setPuzzleBoard([...checkingBoard])
+        }
+        return false
     }
-    const rearrangeBlocks = ()=>{
+    const rearrangeBlocks = async ()=>{
         let checkingBoard = puzzleBoard
         for (let i = 0 ; i < checkingBoard.length; i++){
             let newArray = []
@@ -158,6 +157,7 @@ const PuzzleBoard = (props:Iprop) => {
                 const block: Iblock = {
                     x:i,
                     y:j,
+                    // prevY:j,
                     type: getRandomInt(1, 6),
                     isPopped: false,
                     baseClass: 'block block-box',
@@ -168,14 +168,67 @@ const PuzzleBoard = (props:Iprop) => {
             }
             checkingBoard[i] = newArray
         }
-        
-        setPuzzleBoard([...checkingBoard])
-        
+        // setTimeout(async ()=>{
+            setPuzzleBoard([...checkingBoard])
+            
+        // },1000)
     }
     useEffect(()=>{
-        
-    })
+        if (prevSelected && selected){
+            const x = selected.x
+            const y = selected.y
+            
+            const {
+                x: beforeX,
+                y: beforeY
+            } = prevSelected||{x:0,y:0}
+            
+            selected.x = beforeX
+            selected.y = beforeY
+            selected.exchange = true
 
+            let checkingBoard = puzzleBoard
+            checkingBoard[x][y] = prevSelected
+            checkingBoard[x][y].x = x
+            checkingBoard[x][y].y = y
+            checkingBoard[x][y].exchange = true
+
+            checkingBoard[beforeX][beforeY] = selected
+            
+            
+            // updateMoveCount(-1)
+            // processFinished = false
+            setPuzzleBoard([...checkingBoard])
+            
+            setTimeout(async ()=>{
+                setPhase(1)
+                setSelected(undefined)
+            },100)
+            
+        }
+    },[selected])
+
+    useEffect(()=>{
+        switch(phase){
+            case 1:
+                setTimeout(async ()=>{
+                    if(await calculatePop(true)){
+                       await calculatePop()
+                       setTimeout(()=>setPhase(2),1000)
+                    } else {
+                        setPhase(0)
+                    }
+                },400)
+                break;
+            case 2:
+                setTimeout(async ()=>{
+                    await rearrangeBlocks()
+                    setTimeout(()=>setPhase(1),1000)
+                },1000)
+                break;
+        }
+    },[phase])
+    
     const boardWidth = `${size.x*blockSize}px`
     const boardHeight = `${size.y*blockSize}px`
     const messageHeight = `${size.y*blockSize}px`
@@ -189,10 +242,19 @@ const PuzzleBoard = (props:Iprop) => {
     // score phase
     //----- stop defence game
     // modal? condition check 
-    
-    
-
-    console.log('puzzleBoard ;',puzzleBoard)
+    const [testY, setTestY] = useState({
+        y:10,
+        prevY:undefined
+    })
+    const testBlock = {
+        x:10,
+        ...testY,
+        type: getRandomInt(1, 6),
+        isPopped: false,
+        baseClass: 'block block-box',
+        blockOnClick,
+        key: `${1}${1}${Date.now()}`
+    }
     return (
         <>
             <div id="game">
@@ -203,7 +265,7 @@ const PuzzleBoard = (props:Iprop) => {
                     {puzzleBoard.map((xArray)=>{
                         return <>
                             {xArray.map((block)=>{
-                                return <Block blockInfo={block} sizeY={size.y}/>
+                                return <Block blockInfo={block} sizeY={size.y} isSelected={selected===block}/>
                             })}
                         </>
                     })}
@@ -215,7 +277,28 @@ const PuzzleBoard = (props:Iprop) => {
                 </span>
             </div> */}
             <div id="score-scroll"></div>
-            <button onClick={()=>{calculatePop(); setTimeout(()=>rearrangeBlocks(),1000)}}>calculate</button>
+            {/* <button onClick={async ()=>{
+                
+                setTestY({
+                y:5,prevY:10
+            })
+            setTimeout(()=>setTestY({
+                y:6,
+                prevY:undefined
+            }),1000)
+            }}>calculate</button>
+            <>
+            {
+                puzzleBoard.map((xArray)=>{
+                    return <>
+                            {xArray.map((block)=>{
+                                return <Block  showLog={true} blockInfo={testBlock} sizeY={size.y} isSelected={false}/>
+                            })}
+                        </>
+                    
+                })
+            }
+            </> */}
         </>
     )
 }

@@ -17,39 +17,61 @@ export interface Iblock {
     isPopped: boolean,
     baseClass: string,
     blockOnClick: any;
-    key: string
+    key: string;
+    exchange?: boolean
+    
 }
 
 interface Iprops {
     blockInfo: Iblock;
     sizeY: number;
+    isSelected: boolean
+    showLog?: boolean
 }
 
 
 const Block = (props:Iprops) => {
-    const {x,y, type, baseClass, blockOnClick, isPopped, key, prevY} = props.blockInfo
-    const computedClassName = `${baseClass} ${typeToShapeClass[type]} ${isPopped&&" deleted"}`
-    const [height, setHeight] = useState(prevY===undefined?(-props.sizeY-y-1):(props.sizeY-(prevY)-1))
+    const {x,y, type, baseClass, blockOnClick, isPopped, key, prevY, exchange} = props.blockInfo
+    const [height, setHeight] = useState((props.sizeY-prevY-1))//(-props.sizeY-y-1))
+    const [movingFlag, setMoving] = useState(false)
+    const [hide, setHide] = useState(true)
+    const computedClassName = `${baseClass} ${typeToShapeClass[type]} ${isPopped&&" deleted"} ${props.isSelected&&'selected'} ${movingFlag&&'move'} ${hide&&'hide'}`
     useEffect(() => {
-        if (prevY!==y){
-            setHeight(prevY!==undefined?(props.sizeY-(prevY)-1):(-props.sizeY-y-1))
-            setTimeout(()=>{
-                setHeight(props.sizeY-y-1)
-            }, 1000)
+        if (!exchange&&prevY!==y){
+            // setHeight((props.sizeY-(prevY)))
+            // setHeight(0)
+            setHide(true)
+            // setTimeout(()=>{
+                setHeight(prevY===undefined?(-props.sizeY-y-1):(props.sizeY-prevY-1))
+                setHide(false)
+                setTimeout(()=>{
+                    setMoving(true)
+                    setHeight(props.sizeY-y-1)
+                    setTimeout(()=>{
+                        setMoving(false)
+                    },500)
+                },500)
+            // },100)
+            
+            
+                
+            
         }
     },[props.blockInfo])
     return (
         <div
             key={key}
             id={key}
+            
             className={computedClassName}
             style={{
                 left: `${x*50}px`,
                 top: `${height*50}px`,
-                
-                // borderColor:isPopped?"magenta":""
+                // ...(movingFlag?{}:{transition: 'none'})
             }}
-            onClick={x>-1 && y>-1 && blockOnClick}
+            onClick={()=>{
+                blockOnClick(props.isSelected?undefined:props.blockInfo)
+            }}
             >
 		</div>
     )
