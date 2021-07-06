@@ -2,6 +2,8 @@ import './css/style.css';
 import './index.html';
 import * as React from "react";
 import * as ReactDOM from 'react-dom';
+import store from './stores/store'
+import { Provider } from 'react-redux'
 import Top from './menu/top';
 import DefenseBoard from './components/defense-board';
 import DataBoard from './components/data-board'
@@ -25,6 +27,7 @@ const innerStyle = {
 }
 
 ReactDOM.render(
+  <Provider store={store}>
   <div id="wrap">
     <Top/>
     <DefenseBoard/>
@@ -40,4 +43,5 @@ ReactDOM.render(
     </div>
     <Modal/>
   </div>
+  </Provider>
 , document.getElementById('app'));

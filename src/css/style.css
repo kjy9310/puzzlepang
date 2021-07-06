@@ -177,18 +177,12 @@ body{
     padding: 1px;
     border: 5px outset magenta;
     box-sizing: border-box;
+    transition: top 1s, left 1s, opacity 1s, transform 1s, border .3s ease-in-out;
     z-index: 500;
     opacity: 1;
     background-repeat: no-repeat;
     background-size: cover;
     background-color: #ffa2df;
-    transition: opacity 1s, transform 1s, border .3s ease-in-out;
-}
-.block.hide{
-    visibility:hidden
-}
-.block.move{
-    transition: top 1s, left 1s, opacity 1s, transform 1s, border .3s ease-in-out;
 }
 .block.first{
     border-color: var(--block-color-1);
@@ -217,6 +211,7 @@ body{
 .block.selected{
     border-width: 5px;
     border-style: inset;
+    z-index: 1000;
 }
 .reward-layer{
     top: 100px;

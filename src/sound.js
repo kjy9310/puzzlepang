@@ -36,4 +36,5 @@ const loadSounds = ()=>{
     }
 }
 const sounds = loadSounds()
+// window.loadSounds=loadSounds
 export default sounds
