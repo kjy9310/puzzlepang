@@ -2,6 +2,8 @@ import * as React from "react";
 import {useEffect} from "react"
 // import puzzleGame from '../board'
 import puzzleGame from './puzzleGame'
+import { playSound } from '../stores/sound'
+import { useDispatch } from 'react-redux'
 
 export interface Isize{
     x: number,
@@ -14,18 +16,26 @@ interface Iprop {
 
 const PuzzleBoard = (props:Iprop) => {
     const {size} = props
+    const dispatch = useDispatch()
     const calculateScore = (removedObj,comboCount)=>{
 
     }
+    
     const puzzleOption = {
         sizeInfo:size, 
         removedBlockCallBack:calculateScore,
         checkGameOver:()=>true,
-        gameOverCallBack:()=>console.log('game over!')
+        gameOverCallBack:()=>console.log('game over!'),
+        sounds:(action)=>{
+            console.log('playSound triggered' )
+            dispatch(playSound(action))
+        }
     }
     useEffect(() => {
+        dispatch(playSound('wakeup'))
         const game = puzzleGame(puzzleOption)
         game.gameStart()
+        dispatch(playSound('myang'))
     },[]);
 
     const boardWidth = `${size.x*size.blockSize}px`

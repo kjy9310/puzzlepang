@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { toggle } from '../stores/sound'
 
 const Top : React.FC = (props:any) => {
-	const sound = useSelector((state:any) => state.soundControl.value)
+	const soundOn = useSelector((state:any) => state.soundControl.soundOn)
 	// const sound = useSelector((state:RootState) => state.soundControl.value)
   	const dispatch = useDispatch()
 
@@ -14,6 +14,7 @@ const Top : React.FC = (props:any) => {
 			</a>
 			<span className="title">Game</span>
 			<div
+				className={soundOn?"":`mute`}
 				id="mute"
 				onClick={() => dispatch(toggle())}
 			></div>

@@ -6,11 +6,7 @@ interface IOptions{
     blockMoveCallBack?: Function
     checkGameOver?: Function
     gameOverCallBack?: Function
-    Sounds?:Sounds
-}
-
-interface Sounds{
-    Pop:any
+    sounds?: Function
 }
 
 const puzzle = (Options: IOptions) =>{
@@ -20,7 +16,7 @@ const puzzle = (Options: IOptions) =>{
         blockMoveCallBack,
         checkGameOver,
         gameOverCallBack,
-        Sounds
+        sounds
     } = Options
     
     const MaxX = sizeInfo.x
@@ -83,7 +79,7 @@ const puzzle = (Options: IOptions) =>{
 
         const x = parseInt(event.target.dataset.x)
         const y = parseInt(event.target.dataset.y)
-        Sounds?.Pop.play()
+        sounds('pop')
         if (selected===undefined){
             selected = Board[x][y]
             selected.div.classList.add("selected")
@@ -152,7 +148,7 @@ const puzzle = (Options: IOptions) =>{
 
     const removeBlocks = () =>{
         return new Promise<void>(resolve=>{
-            // Sounds.Woodpecker.play()
+            sounds('coins')
             let RemovedBlockCount = {}
             for (let i = 0 ; i < Board.length; i++){
                 let newArray = []
@@ -218,10 +214,6 @@ const puzzle = (Options: IOptions) =>{
     }
 
     const processing = async () =>{
-        // MessageNode.innerText=""
-        // CoverNode.style.backgroundColor="transparent"
-        // CoverNode.style.opacity="1"
-        // CoverNode.style.display="block"
         const runProcess = await checkBoard(true)
         if (runProcess) {
             ComboCount++
@@ -237,18 +229,11 @@ const puzzle = (Options: IOptions) =>{
             }
             await processing()
         } 
-        // CoverNode.style.display="none"
         processFinished = true
         ComboCount = 0
     }
 
     const gameStart = () =>{
-        // CoverNode.style.display="none"
-        // Sounds.Wakeup.play()
-        // document.getElementById('mute').onclick=(e)=>{
-        //     Sounds.Myang.muted = !Sounds.Myang.muted
-        //     e.target.className = Sounds.Myang.muted?"mute":""
-        // }
         console.log('gameStart called')
         for (let x = 0 ; x < MaxX; x++){
             Board[x]=[]
@@ -257,11 +242,9 @@ const puzzle = (Options: IOptions) =>{
             }
         }
         setTimeout(async()=>{
-            // Sounds.Myang.play()
             await setBlocks()
             await new Promise<void>(resolve=>{setTimeout(()=>resolve(),1500)})
             processFinished = true
-            // Sounds.Myang.volume = 0.5;
         },1000)
         // CoverNode.onclick=undefined
         // document.getElementById("spell-first").onclick=(e)=>activateSpell(e,1)
