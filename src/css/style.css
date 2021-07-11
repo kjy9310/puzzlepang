@@ -10,24 +10,32 @@ div{
     --block-color-4: #ebecec;
     --block-color-5: #fc8374;
     /* ham90Blackcow */
-    --block-background-image-1: url("https://static-cdn.jtvnw.net/emoticons/v1/303220996/1.0");
+    --block-background-image-1: url("/images/blackcow.png");
+    /* url("https://static-cdn.jtvnw.net/emoticons/v1/303220996/1.0"); */
     /* ham90Um  */
-    --block-background-image-2: url("https://static-cdn.jtvnw.net/emoticons/v1/303227993/1.0");
+    --block-background-image-2: url("/images/um.png");
+    /* url("https://static-cdn.jtvnw.net/emoticons/v1/303227993/1.0"); */
     /* ham90S2  */
-    --block-background-image-3: url("https://static-cdn.jtvnw.net/emoticons/v1/303227991/1.0");
+    --block-background-image-3: url("/images/S2.png");
+    /* url("https://static-cdn.jtvnw.net/emoticons/v1/303227991/1.0"); */
     /* ham90Nanaemote */
-    --block-background-image-4: url("https://static-cdn.jtvnw.net/emoticons/v1/303220984/1.0");
+    --block-background-image-4: url("/images/nana.png");
+    /* url("https://static-cdn.jtvnw.net/emoticons/v1/303220984/1.0"); */
     /* ham90Oh */
-    --background-image-oh:url("https://static-cdn.jtvnw.net/emoticons/v1/303127884/1.0");
+    --background-image-oh: url("/images/oh.png");
+    /* url("https://static-cdn.jtvnw.net/emoticons/v1/303127884/1.0"); */
     /* ham90Rip */
-    --background-image-rip:url("https://static-cdn.jtvnw.net/emoticons/v1/303127853/1.0");
+    --background-image-rip: url("/images/rip.png");
+    /* url("https://static-cdn.jtvnw.net/emoticons/v1/303127853/1.0"); */
     /* ham90Sibal */
-    --block-background-image-5: url("https://static-cdn.jtvnw.net/emoticons/v1/303227981/1.0");
+    --block-background-image-5: url("/images/sibal.png");
+    /* url("https://static-cdn.jtvnw.net/emoticons/v1/303227981/1.0"); */
     /* ham90Dab */
     /* https://static-cdn.jtvnw.net/emoticons/v1/303197573/1.0 */
     /* ham90Ddong */
     /* https://static-cdn.jtvnw.net/emoticons/v1/303220977/1.0 */
-    --background-image-poop: url("https://static-cdn.jtvnw.net/emoticons/v1/303220977/1.0")
+    --background-image-poop: url("/images/poop.png");
+    /* url("https://static-cdn.jtvnw.net/emoticons/v1/303220977/1.0") */
     /* ham90Hamface */
     /* https://static-cdn.jtvnw.net/emoticons/v1/300804047/1.0 */
 }
@@ -83,7 +91,7 @@ body{
     background-color: rgb(255, 204, 255);
     border-radius: 10px;
     width:100%;
-    height: 35px;
+    height: 5vh;
 }
 .title{
     color:white;
@@ -115,6 +123,7 @@ body{
     bottom:0;
     position: relative;
     display: inline-block;
+    max-height: 85vh;
 }
 #gamedata{
     max-width:400px;
@@ -122,19 +131,12 @@ body{
     padding: 10px;
     margin: 0 auto;
 }
-#gamedata #stats{
+.block-control{
     display: flex;
-    justify-content: space-evenly;
-    transform: scale(.4) translate(0%,-80%);
-    max-height: 40px;
+    align-content: space-evenly;
 }
-#gamedata #stats div{
-    padding: 0 10px;
-    font-size: 45px;
-}
-#gamedata #bonuses{
-    transform: scale(.4) translate(-80%,-80%);
-    max-height: 80px;
+.block-control > div{
+    flex:auto
 }
 #game-board{
     border:5px solid rgb(255, 204, 255);
@@ -268,10 +270,7 @@ body{
     min-width: 100px;
     display: inline-block;
 }
-.spell-box{
-    display: flex;
-    align-content: space-evenly;
-}
+
 #defense-board{
     height: 16vh;
     max-width: 600px;
@@ -404,13 +403,6 @@ body{
     position: absolute;
     left: 3px;
     top: 20px;
-}
-
-.spell-cost{
-    top: 50px;
-    position: absolute;
-    text-align: center;
-    width: 100%;
 }
 
 #stage-number{

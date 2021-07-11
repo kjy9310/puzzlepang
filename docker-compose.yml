@@ -15,7 +15,7 @@ services:
     container_name: front
     image: puzzle_node_env
     environment:
-      - ENV=development
+      - ENV=development #production
     build:
       context: .
       dockerfile: Dockerfile

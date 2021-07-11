@@ -3,20 +3,24 @@ import {Isize} from './puzzle-board'
 interface IOptions{
     sizeInfo:Isize
     removedBlockCallBack?: Function
-    blockMoveCallBack?: Function
+    processStateCallBack?: Function
     checkGameOver?: Function
     gameOverCallBack?: Function
-    sounds?: Function
+    sounds?: Function,
+    typeToShape: Object
+    moveCountRef: any
 }
 
 const puzzle = (Options: IOptions) =>{
     const {
         sizeInfo,
         removedBlockCallBack,
-        blockMoveCallBack,
+        processStateCallBack,
         checkGameOver,
         gameOverCallBack,
-        sounds
+        sounds,
+        typeToShape,
+        moveCountRef
     } = Options
     
     const MaxX = sizeInfo.x
@@ -35,17 +39,9 @@ const puzzle = (Options: IOptions) =>{
         {x:1, y: 1},
     ]
 
-    const typeToShape = {
-        1:"first",
-        2:"second",
-        3:"third",
-        4:"forth",
-        5:"fifth",
-    }
-
     let selected = undefined
 
-    let processFinished = false
+    let processRunning = true
 
     let ComboCount = 0
 
@@ -73,7 +69,7 @@ const puzzle = (Options: IOptions) =>{
     }
 
     const blockOnClick = async (event) => {
-        if (!processFinished){
+        if (processRunning || (moveCountRef&&moveCountRef.current<1)){
             return
         }
 
@@ -104,8 +100,9 @@ const puzzle = (Options: IOptions) =>{
             
             await setBlocks()
             
-            blockMoveCallBack&&blockMoveCallBack()
-            processFinished = false
+            processRunning = true
+            processStateCallBack&&processStateCallBack(processRunning)
+
             setTimeout(()=>{
                 processing()
                 selected.div.classList.remove("selected");
@@ -219,7 +216,6 @@ const puzzle = (Options: IOptions) =>{
             ComboCount++
             await checkBoard()
             await removeBlocks()
-            // calculatePoints()
             await new Promise<void>(resolve=>{setTimeout(()=>resolve(),400)})
             await setBlocks()
             await new Promise<void>(resolve=>{setTimeout(()=>resolve(),1000)})
@@ -229,7 +225,8 @@ const puzzle = (Options: IOptions) =>{
             }
             await processing()
         } 
-        processFinished = true
+        processRunning = false
+        processStateCallBack&&processStateCallBack(processRunning)
         ComboCount = 0
     }
 
@@ -244,15 +241,8 @@ const puzzle = (Options: IOptions) =>{
         setTimeout(async()=>{
             await setBlocks()
             await new Promise<void>(resolve=>{setTimeout(()=>resolve(),1500)})
-            processFinished = true
-        },1000)
-        // CoverNode.onclick=undefined
-        // document.getElementById("spell-first").onclick=(e)=>activateSpell(e,1)
-        // document.getElementById("spell-second").onclick=(e)=>activateSpell(e,2)
-        // document.getElementById("spell-third").onclick=(e)=>activateSpell(e,3)
-        // document.getElementById("spell-forth").onclick=(e)=>activateSpell(e,4)
-        // document.getElementById("spell-fifth").onclick=(e)=>activateSpell(e,5)
-        // clearStage()
+            processRunning = false
+        },1000)        
     }
 
     return {gameStart}

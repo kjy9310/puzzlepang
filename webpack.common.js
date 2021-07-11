@@ -8,18 +8,19 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.(png|jpe?g|gif|svg|eot|ttf|woff|woff2|otf)$/i,
+        loader: "url-loader",
+        options: {
+          limit: 8192,
+          name: '[name].[ext]',
+        },
+      },
+      {
         test: /\.css$/i,
         use: [
           "style-loader",
           "css-loader",
         ],
-      },
-      {
-        test: /\.(png|jpe?g|gif|svg|eot|ttf|woff|woff2|otf)$/i,
-        loader: "url-loader",
-        options: {
-          limit: 8192,
-        },
       },
       {
         test: /\.(html)$/i, 

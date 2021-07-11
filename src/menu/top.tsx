@@ -4,7 +4,6 @@ import { toggle } from '../stores/sound'
 
 const Top : React.FC = (props:any) => {
 	const soundOn = useSelector((state:any) => state.soundControl.soundOn)
-	// const sound = useSelector((state:RootState) => state.soundControl.value)
   	const dispatch = useDispatch()
 
     return (
