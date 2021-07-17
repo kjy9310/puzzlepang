@@ -8,19 +8,22 @@ import * as Phaser from 'phaser'
 
 const imageOh = require('/images/oh.png').default
 const imageHamface = require('/images/hamface.png')
+const baseWidth = 360
 
-export const DEFAULT_WIDTH = 1280
-export const DEFAULT_HEIGHT = 720
+// export const DEFAULT_WIDTH = 1280
+// export const DEFAULT_HEIGHT = 720
 
 class DefenseScene extends Phaser.Scene
 {
     // constructor ()
     // {
     //     super();
+		
     // }
 
     preload ()
     {
+		
 		// console.log('imageOh', imageOh)
         // this.load.image('bullet', imageOh);
 		// this.load.image('cannon', '/images/hamface.png');
@@ -38,7 +41,7 @@ class DefenseScene extends Phaser.Scene
 	this.textures.once('addtexture', function () {
 
 		bullet1 = this.add.image(64, 76, 'bullet').setOrigin(0);
-		speed1 = Phaser.Math.GetSpeed(600, 6);
+		speed1 = Phaser.Math.GetSpeed(baseWidth, 60);
 
 	}, this);
 

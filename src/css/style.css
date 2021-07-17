@@ -124,6 +124,8 @@ body{
     position: relative;
     display: inline-block;
     max-height: 85vh;
+    overflow: hidden;
+    width: 360px;
 }
 #gamedata{
     max-width:400px;
