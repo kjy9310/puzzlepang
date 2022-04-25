@@ -41,7 +41,7 @@ const puzzle = (Options: IOptions) =>{
 
     let selected = undefined
 
-    let processRunning = true
+    globalThis.processRunning = true
 
     let ComboCount = 0
 
@@ -69,7 +69,7 @@ const puzzle = (Options: IOptions) =>{
     }
 
     const blockOnClick = async (event) => {
-        if (processRunning || (moveCountRef&&moveCountRef.current<1)){
+        if (globalThis.processRunning || (moveCountRef&&moveCountRef.current<1)){
             return
         }
 
@@ -100,8 +100,8 @@ const puzzle = (Options: IOptions) =>{
             
             await setBlocks()
             
-            processRunning = true
-            processStateCallBack&&processStateCallBack(processRunning)
+            globalThis.processRunning = true
+            processStateCallBack&&processStateCallBack(globalThis.processRunning)
 
             setTimeout(()=>{
                 processing()
@@ -170,19 +170,18 @@ const puzzle = (Options: IOptions) =>{
         })
     }
 
+   
     const checkChain = async (self, direction=undefined) => {
         const x = self.x
         const y = self.y
         
-        if (direction) {
+        if (direction!==undefined) {
             const opposite = Around[direction]
             const {x:diffX, y:diffY} = opposite
             const checkX = (parseInt(x)+diffX)
             const checkY = (parseInt(y)+diffY)
             const checkObject = Board[checkX]&&Board[checkX][checkY]
             if (checkObject && checkObject.type === self.type) {
-                Board[checkX][checkY].delete="1"
-                Board[x][y].delete="1"
                 return true
             } else {
                 return false
@@ -225,8 +224,8 @@ const puzzle = (Options: IOptions) =>{
             }
             await processing()
         } 
-        processRunning = false
-        processStateCallBack&&processStateCallBack(processRunning)
+        globalThis.processRunning = false
+        processStateCallBack&&processStateCallBack(globalThis.processRunning)
         ComboCount = 0
     }
 
@@ -241,7 +240,7 @@ const puzzle = (Options: IOptions) =>{
         setTimeout(async()=>{
             await setBlocks()
             await new Promise<void>(resolve=>{setTimeout(()=>resolve(),1500)})
-            processRunning = false
+            globalThis.processRunning = false
         },1000)        
     }
 

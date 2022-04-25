@@ -7,7 +7,8 @@ import * as Phaser from 'phaser'
 // import * as imageHamface from '/images/hamface.png'
 
 const imageOh = require('/images/oh.png').default
-const imageHamface = require('/images/hamface.png')
+const imageHamface = require('/images/hamface.png').default
+const poop = require('/images/poop.png').default
 const baseWidth = 360
 
 // export const DEFAULT_WIDTH = 1280
@@ -31,6 +32,7 @@ class DefenseScene extends Phaser.Scene
 
 		
 	
+		this.textures.addBase64('poop', poop);
     }
 
     create ()
@@ -40,14 +42,13 @@ class DefenseScene extends Phaser.Scene
     // this.add.image(0, 200, 'ground').setOrigin(0);
 	this.textures.once('addtexture', function () {
 
-		bullet1 = this.add.image(64, 76, 'bullet').setOrigin(0);
-		speed1 = Phaser.Math.GetSpeed(baseWidth, 60);
+		speed1 = Phaser.Math.GetSpeed(200, 20);
 
 	}, this);
 
-	this.textures.addBase64('bullet', imageOh);
+	// this.textures.addBase64('poop', poop);
     
-
+	// this.textures.addBase64('bullet', poop);
     
 
     // this.add.image(64, 72, 'cannon').setOrigin(0);
@@ -69,16 +70,30 @@ class DefenseScene extends Phaser.Scene
 
     update (time, delta)
     {
-		if (bullet1){
-			bullet1.x += speed1 * delta;
-
-			if (bullet1.x > 864)
-			{
-				bullet1.x = 64;
-			}
+		if (globalThis.processRunning){
+			return
+		}
+		if (poops.length>0){
+			poops=poops.filter((poop, index, arr)=>{
+				if (poop.stop||poop.x>200){
+					poop.stop = true
+					poop.setActive(false).setVisible(false);
+					poop.destroy();
+					return false
+				} else {
+					poop.x += speed1;
+					return true
+				}
+			})
 		}
         
-
+		if (poopLastGen+poopRegen<time){
+			poopLastGen = time+poopRegen
+			const y = 70*Math.random()
+			const bulletRandom = this.add.image(10, y, 'poop').setOrigin(0);
+			poops.push(bulletRandom)
+			console.log("poops", poops.length , poops)
+		}
 		// bullet2.x += speed2 * delta;
 
 		// if (bullet2.x > 864)
@@ -87,6 +102,11 @@ class DefenseScene extends Phaser.Scene
 		// }
     }
 }
+
+let poops=[]
+let poopRegen = 5000
+let poopLastGen = 0
+
 
 var bullet1;
 var bullet2;
@@ -135,7 +155,7 @@ const config = {
 
 const DefenseBoard : React.FC = (props:any) => {
 	let game = new Phaser.Game(config)
-
+console.log("Re render Defense Board")
     return (
         <div id="defense-board">
 			{/* <div id="enemy-hit-points-box"></div>

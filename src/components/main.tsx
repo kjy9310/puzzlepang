@@ -20,8 +20,8 @@ const typeToShape = {
     5:"fifth",
 }
 
-const Main : React.FC = (props:any) => {
-	const [blockStats, setBlockStats] = useState({
+const PuzzlePart: React.FC = (props:any) => {
+    const [blockStats, setBlockStats] = useState({
         1:0,
         2:0,
         3:0,
@@ -30,7 +30,7 @@ const Main : React.FC = (props:any) => {
     })
     const [move, setMove] = useState(5)
     useEffect(()=>{
-        console.log('main - blockStats', blockStats)
+        
     },[blockStats])
     const statProps = {
         move,
@@ -38,11 +38,8 @@ const Main : React.FC = (props:any) => {
         blockStats,
         setBlockStats
     }
-    return (
-    <>
-        <div id="inner">
-            <DefenseBoard/>
-            <DataBoard
+    return <>
+        <DataBoard
                 {...statProps}
                 typeToShape={typeToShape}
             />
@@ -55,6 +52,15 @@ const Main : React.FC = (props:any) => {
                     blockSize: 50
                 }}
             />
+    </>
+}
+
+const Main : React.FC = (props:any) => {
+    return (
+    <>
+        <div id="inner">
+            <DefenseBoard/>
+            <PuzzlePart/>
         </div>
         <Modal/>
     </>

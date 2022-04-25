@@ -74,10 +74,10 @@ const PuzzleBoard = (props:Iprop) => {
         typeToShape
     }
     useEffect(() => {
-        // dispatch(playSound('wakeup'))
+        dispatch(playSound('wakeup'))
         const game = puzzleGame(puzzleOption)
         game.gameStart()
-        // dispatch(playSound('myang'))
+        dispatch(playSound('myang'))
     },[]);
 
     const boardWidth = `${size.x*size.blockSize}px`

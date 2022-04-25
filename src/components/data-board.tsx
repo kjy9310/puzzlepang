@@ -5,9 +5,11 @@ const DataBoard = (props:any) => {
 		blockStats,
 		setBlockStats,
 		typeToShape,
-		move
+		move,
+		setMove
 	} = props
 	const useBlock = (key) =>{
+		console.log('useBlock', key)
 		const score = blockStats[key]
 		if (score>=10){
 			useBlockAbility(key)
@@ -19,7 +21,22 @@ const DataBoard = (props:any) => {
 	}
 
 	const useBlockAbility = (key)=>{
-
+		console.log('useBlockAbility', key)
+		switch(key){
+			case "1": //blackcow
+				break;
+			case "2":	//think
+				console.log('think')
+				setMove(move+1)
+				break;
+			case "3":
+				break;
+			case "4":
+				break;
+			case "5":
+				break;
+			default:
+		}
 	}
     return (
         <div id="gamedata">
