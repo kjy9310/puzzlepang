@@ -1,5 +1,6 @@
 import * as React from "react";
-import * as Phaser from 'phaser'
+import * as Phaser from 'phaser';
+
 // import MainScene from './defense-scene'
 // import PreloadScene from './scenes/preloadScene'
 // declare module '*.png';

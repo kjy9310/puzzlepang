@@ -37,13 +37,17 @@ const PuzzleBoard = (props:Iprop) => {
         moveRef.current=move
     },[move, blockStats])
     
+    let accumulateSum = 0
     const calculateScore = ({RemovedBlockCount, ComboCount})=>{
-        
-        // console.log('calculateScore - blockStats', statsRef.current, 'move', move, 'RemovedBlockCount', RemovedBlockCount)
-        
+        let score = 0
+        let removedSum = 0
+        if (ComboCount<1){
+            accumulateSum = 0
+        }
         const newBlockStats = Object.keys(blockStatsRef.current).reduce((acc: Object, key)=>{
             if (RemovedBlockCount[key]){
                 const singleBlockScore = blockStatsRef.current[key]
+                removedSum+=RemovedBlockCount[key]
                 return {
                     ...acc,
                     [key]: singleBlockScore + RemovedBlockCount[key]
@@ -52,7 +56,19 @@ const PuzzleBoard = (props:Iprop) => {
                 return acc
             }
         },blockStatsRef.current)
+        
+        score = removedSum
+        accumulateSum+=removedSum
+
         setBlockStats(newBlockStats)
+        
+        if (removedSum>10){
+            setMove(move+1)
+        }
+        if (removedSum>5){
+            score = score*2
+        }
+        console.log('calculateScore - RemovedBlockCount', RemovedBlockCount, 'removedSum', removedSum, 'ComboCount', ComboCount, 'accumulateSum', accumulateSum, 'score', score)
     }
     
     const puzzleOption = {

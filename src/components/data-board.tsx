@@ -1,4 +1,5 @@
 import * as React from "react";
+import Block from './puzzle-block'
 
 const DataBoard = (props:any) => {
 	const {
@@ -42,9 +43,30 @@ const DataBoard = (props:any) => {
         <div id="gamedata">
 			<div className="gamedata-top-box">
 				<div className="bonus-box">
-					<div id="bonuses">
-						{`ham1 x 5 => X 2`}
-					</div>		
+					<div className="bonus">
+						<div style={{position:"relative"}} className="block" />
+						<span style={{fontSize:"30px"}}>
+							{` x 5 = X 2`}
+						</span>	
+					</div>
+					<div className="bonus">
+						<div style={{position:"relative"}} className="block" />
+						<span style={{fontSize:"30px"}}>
+							{` x 10 = move`}
+						</span>	
+					</div>
+					<div className="bonus">
+						<div style={{position:"relative"}} className="block" />
+						<span style={{fontSize:"30px"}}>
+							{` x 00 = 0000`}
+						</span>	
+					</div>
+					<div className="bonus">
+						<div style={{position:"relative"}} className="block" />
+						<span style={{fontSize:"30px"}}>
+							{` x 00 = 0000`}
+						</span>	
+					</div>
 				</div>
 			</div>
 			
