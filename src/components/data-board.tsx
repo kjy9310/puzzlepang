@@ -1,11 +1,11 @@
 import * as React from "react";
-import Block from './puzzle-block'
+import Bonus from './bonus'
+import { TypeToShape } from '../constant'
 
 const DataBoard = (props:any) => {
 	const {
 		blockStats,
 		setBlockStats,
-		typeToShape,
 		move,
 		setMove
 	} = props
@@ -43,6 +43,7 @@ const DataBoard = (props:any) => {
         <div id="gamedata">
 			<div className="gamedata-top-box">
 				<div className="bonus-box">
+					<Bonus/>
 					<div className="bonus">
 						<div style={{position:"relative"}} className="block" />
 						<span style={{fontSize:"30px"}}>
@@ -76,7 +77,7 @@ const DataBoard = (props:any) => {
 					return <div className="stat-block">
 						<div className="spell-cost">-10</div>
 						<div className="block-wrap" onClick={()=>useBlock(key)}>
-							<div className={`block ${typeToShape[key]}`} style={{left:0}}></div>
+							<div className={`block ${TypeToShape[key]}`} style={{left:0}}></div>
 						</div>
 						<div>{score}</div>
 					</div>

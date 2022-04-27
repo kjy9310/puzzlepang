@@ -5,20 +5,8 @@ import DataBoard from './data-board'
 import PuzzleBoard from './puzzle-board'
 import Modal from './modal'
 import {useEffect, useState, useCallback} from "react"
+import { MaxX, MaxY, TypeToShape } from "../constant"
 
-// width
-const MaxX = 7
-
-// height
-const MaxY = 7
-
-const typeToShape = {
-    1:"first",
-    2:"second",
-    3:"third",
-    4:"forth",
-    5:"fifth",
-}
 
 const PuzzlePart: React.FC = (props:any) => {
     const [blockStats, setBlockStats] = useState({
@@ -41,15 +29,12 @@ const PuzzlePart: React.FC = (props:any) => {
     return <>
         <DataBoard
                 {...statProps}
-                typeToShape={typeToShape}
             />
             <PuzzleBoard
-                typeToShape={typeToShape}
                 {...statProps}
                 size={{
                     x: MaxX,
                     y: MaxY,
-                    blockSize: 50
                 }}
             />
     </>

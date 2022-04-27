@@ -4,18 +4,13 @@ import {useEffect, useState, useCallback, useRef} from "react"
 import puzzleGame from './puzzleGame'
 import { playSound } from '../stores/sound'
 import { useSelector, useDispatch } from 'react-redux'
+import { TypeToShape, Isize, BlockSize } from '../constant'
 
-export interface Isize{
-    x: number,
-    y: number,
-    blockSize: number
-}
 interface Iprop {
     size: Isize
     setBlockStats: Function
     blockStats: Object
     move: number,
-    typeToShape: Object
     setMove: Function
 }
 
@@ -26,7 +21,6 @@ const PuzzleBoard = (props:Iprop) => {
         blockStats,
         move,
         setMove,
-        typeToShape
     } = props
     const dispatch = useDispatch()
     const blockStatsRef = useRef(null);
@@ -87,7 +81,7 @@ const PuzzleBoard = (props:Iprop) => {
         processStateCallBack:(processRunning)=>{
             processRunning&&setMove(moveRef.current-1)
         },
-        typeToShape
+        TypeToShape
     }
     useEffect(() => {
         dispatch(playSound('wakeup'))
@@ -96,9 +90,9 @@ const PuzzleBoard = (props:Iprop) => {
         dispatch(playSound('myang'))
     },[]);
 
-    const boardWidth = `${size.x*size.blockSize}px`
-    const boardHeight = `${size.y*size.blockSize}px`
-    const messageHeight = `${size.y*size.blockSize}px`
+    const boardWidth = `${size.x*BlockSize}px`
+    const boardHeight = `${size.y*BlockSize}px`
+    const messageHeight = `${size.y*BlockSize}px`
     // x -> bottom to top
     // y -> left to right
     //----- stop defence game

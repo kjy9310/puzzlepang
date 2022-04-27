@@ -1,4 +1,5 @@
-import {Isize} from './puzzle-board'
+import { TypeToShape, Isize} from '../constant'
+
 
 interface IOptions{
     sizeInfo:Isize
@@ -7,7 +8,6 @@ interface IOptions{
     checkGameOver?: Function
     gameOverCallBack?: Function
     sounds?: Function,
-    typeToShape: Object
     moveCountRef: any
 }
 
@@ -19,7 +19,6 @@ const puzzle = (Options: IOptions) =>{
         checkGameOver,
         gameOverCallBack,
         sounds,
-        typeToShape,
         moveCountRef
     } = Options
     
@@ -53,7 +52,7 @@ const puzzle = (Options: IOptions) =>{
 
     const createBlock = (x,y, type, className) => {
         const div = document.createElement('div')
-        div.className = className + " " + typeToShape[type]
+        div.className = className + " " + TypeToShape[type]
         div.style.left = `${x*50}px`
         div.style.top = `${-50*y}px`//`${x*50}px`
         div.dataset.x = x
