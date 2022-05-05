@@ -24,6 +24,7 @@ const loadSounds = ()=>{
             this.play()
         }
     })
+    
     return {
         myang,
         coins,
@@ -36,5 +37,7 @@ const loadSounds = ()=>{
     }
 }
 const sounds = loadSounds()
+
+
 // window.loadSounds=loadSounds
 export default sounds

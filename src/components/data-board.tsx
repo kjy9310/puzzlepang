@@ -1,23 +1,26 @@
 import * as React from "react";
 import Bonus from './bonus'
 import { TypeToShape } from '../constant'
+import { connect } from 'react-redux'
+import type { RootState } from '../stores/store'
+import { setStatBlocks, addMove, addLife, setSkill } from '../stores/stats'
+import { useDispatch } from 'react-redux'
 
 const DataBoard = (props:any) => {
 	const {
 		blockStats,
-		setBlockStats,
 		move,
-		setMove
 	} = props
+	const dispatch = useDispatch()
 	const useBlock = (key) =>{
 		console.log('useBlock', key)
 		const score = blockStats[key]
 		if (score>=10){
 			useBlockAbility(key)
-			setBlockStats({
+			dispatch(setStatBlocks({
 				...blockStats,
 				[key]:score-10,
-			})
+			}))
 		}
 	}
 
@@ -27,14 +30,19 @@ const DataBoard = (props:any) => {
 			case "1": //blackcow
 				break;
 			case "2":	//think
-				console.log('think')
-				setMove(move+1)
+				dispatch(addMove(1))
 				break;
 			case "3":
+				dispatch(addLife(1))
 				break;
 			case "4":
 				break;
 			case "5":
+				// dispatch(addMove(1))
+				dispatch(setSkill(true))
+				setTimeout(()=>{
+					dispatch(setSkill(false))
+				})
 				break;
 			default:
 		}
@@ -90,4 +98,7 @@ const DataBoard = (props:any) => {
     )
 }
 
-export default DataBoard;
+export default connect((state:RootState) => ({
+	blockStats: state.stats.blocks,
+	move: state.stats.move
+  }))(DataBoard);

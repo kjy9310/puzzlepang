@@ -29,10 +29,7 @@ export const soundControl = createSlice({
           console.log('ERROR!!! no sound name :', action.payload)
         }
       }
-    }
-    // functionWithParam:(state, action) => {
-    //   state.value += action.payload
-    // }
+    },
   }
 })
 

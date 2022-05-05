@@ -3,24 +3,26 @@ import {useEffect, useState, useCallback, useRef} from "react"
 // import puzzleGame from '../board'
 import puzzleGame from './puzzleGame'
 import { playSound } from '../stores/sound'
+import { setStatBlocks, addMove, attackEnemy } from '../stores/stats'
 import { useSelector, useDispatch } from 'react-redux'
 import { TypeToShape, Isize, BlockSize } from '../constant'
+import { connect } from 'react-redux'
+import type { RootState } from '../stores/store'
+
 
 interface Iprop {
     size: Isize
-    setBlockStats: Function
-    blockStats: Object
+    blockStats: any
     move: number,
-    setMove: Function
+    scores: any
 }
 
 const PuzzleBoard = (props:Iprop) => {
     const {
         size,
-        setBlockStats,
         blockStats,
         move,
-        setMove,
+        scores
     } = props
     const dispatch = useDispatch()
     const blockStatsRef = useRef(null);
@@ -54,14 +56,16 @@ const PuzzleBoard = (props:Iprop) => {
         score = removedSum
         accumulateSum+=removedSum
 
-        setBlockStats(newBlockStats)
+        dispatch(setStatBlocks(newBlockStats))
         
         if (removedSum>10){
-            setMove(move+1)
+            dispatch(addMove(+1))
         }
         if (removedSum>5){
             score = score*2
         }
+
+        dispatch(attackEnemy(score))
         console.log('calculateScore - RemovedBlockCount', RemovedBlockCount, 'removedSum', removedSum, 'ComboCount', ComboCount, 'accumulateSum', accumulateSum, 'score', score)
     }
     
@@ -79,7 +83,7 @@ const PuzzleBoard = (props:Iprop) => {
             dispatch(playSound(action))
         },
         processStateCallBack:(processRunning)=>{
-            processRunning&&setMove(moveRef.current-1)
+            processRunning&&dispatch(addMove(-1))//setMove(moveRef.current-1)
         },
         TypeToShape
     }
@@ -122,4 +126,8 @@ const PuzzleBoard = (props:Iprop) => {
     )
 }
 
-export default PuzzleBoard;
+export default connect((state:RootState) => ({
+	blockStats: state.stats.blocks,
+    move: state.stats.move,
+    scores: state.stats.scores
+  }))(PuzzleBoard);

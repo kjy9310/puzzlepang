@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import soundReducer from './sound'
 import stats from './stats'
 
@@ -9,10 +9,10 @@ export default configureStore({
   }
 })
 
-// export const rootReducer = combineReducers({
-//     dashboard: dashboardReducer,
-//     user: userReducer
-//   });
+export const rootReducer = combineReducers({
+  soundControl: soundReducer,
+  stats
+});
   
-//   export type RootState = ReturnType<typeof rootReducer>
+export type RootState = ReturnType<typeof rootReducer>
   

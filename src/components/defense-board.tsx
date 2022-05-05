@@ -1,5 +1,12 @@
 import * as React from "react";
 import * as Phaser from 'phaser';
+import { useSelector, useDispatch } from 'react-redux'
+import { playSound } from '../stores/sound'
+import { addLife, addMove } from '../stores/stats'
+
+// import type { RootState } from '../stores/store'
+import store from '../stores/store'
+// import { connect } from 'react-redux'
 
 // import MainScene from './defense-scene'
 // import PreloadScene from './scenes/preloadScene'
@@ -10,32 +17,84 @@ import * as Phaser from 'phaser';
 const imageOh = require('/images/oh.png').default
 const imageHamface = require('/images/hamface.png').default
 const poop = require('/images/poop.png').default
+const hamMain = require('/images/hammain.png').default
 const baseWidth = 360
 
 // export const DEFAULT_WIDTH = 1280
 // export const DEFAULT_HEIGHT = 720
+class ReadyScene extends Phaser.Scene{
+	create(){
+		// this.add.text(10, 10, 'Loading...', { font: '16px Courier' });
+	}
 
+}
 class DefenseScene extends Phaser.Scene
 {
-    // constructor ()
-    // {
-    //     super();
+	dispatch
+	numToLoad
+	sprites
+	constructor(){
+		super({
+			key:'DefenseScene'
+		})
+		this.sprites = [];
+	}
+
+    init(data)
+	{
+		console.log('init', data)
+		this.dispatch = data.dispatch
 		
-    // }
+	}
 
     preload ()
     {
-		
 		// console.log('imageOh', imageOh)
         // this.load.image('bullet', imageOh);
 		// this.load.image('cannon', '/images/hamface.png');
-		// this.load.image('ground', 'assets/tests/timer/ground.png');
-
-		
-	
+		// this.load.image('imageHamface', '/images/hamface.png');
+		this.numToLoad = 4
+		this.textures.on('addtexture', () => {
+			console.log('another image loaded :', this.numToLoad--)
+			if (this.numToLoad < 1) this.createNext();
+		})
+		this.textures.addBase64('imageOh', imageOh);
+		this.textures.addBase64('hamMain', hamMain);
 		this.textures.addBase64('poop', poop);
+		this.textures.addBase64('imageHamface', imageHamface);
+		
+		const currentState = store.getState()
+		enemyLife = this.add.text(10, 0, 'Enemy : '+currentState.stats.scores.enemyLife , { font: '16px Courier' });
+		hamLife = this.add.text(250, 0, 'Life : '+currentState.stats.scores.hamLife , { font: '16px Courier' });
     }
+	createNext(){
+		console.log('createNext called')
+		const poopStarting = this.add.image(15, 50, 'poop')
+		poopStarting.setScale(1.2)
+		const hamMain = this.add.image(320, 50, 'hamMain')
+		hamface = this.add.image(320, 50, 'imageOh')
+		hamface.setScale(1.4)
+		hamMain.setScale(0.6)
+		hamface.timeout = undefined
+		hamface.visible =false
+		hamface.hitAnimation = () =>{
+			clearTimeout(hamface.timeout)
+			hamface.visible=true
+			
+			hamface.timeout = setTimeout(()=>{
+				hamface.visible =false
+			},700)
+		}
+		for (let i = 0; i < 50; i++)
+		{
+			const x = Phaser.Math.Between(34, 300);
+			const y = Phaser.Math.Between(-64, 200);
 
+			const image = this.add.image(x, y, 'imageHamface');
+			// image.setBlendMode(Phaser.BlendModes.ADD);
+			this.sprites.push({ s: image, r: 2 + Math.random() * 6 });
+		}
+	}
     create ()
     {
         //   Bullet 1 (600px in 6 seconds)
@@ -43,10 +102,14 @@ class DefenseScene extends Phaser.Scene
     // this.add.image(0, 200, 'ground').setOrigin(0);
 	this.textures.once('addtexture', function () {
 
-		speed1 = Phaser.Math.GetSpeed(200, 20);
-
+		speed1 = Phaser.Math.GetSpeed(200, 20) * 100;
+		
+		// const hamface = this.add.image(320, 50, 'imageOh')
+		// this.add.image(320, 50, 'hamMain')
+		
+		// hamface.setScale(1.3)
 	}, this);
-
+	
 	// this.textures.addBase64('poop', poop);
     
 	// this.textures.addBase64('bullet', poop);
@@ -71,15 +134,45 @@ class DefenseScene extends Phaser.Scene
 
     update (time, delta)
     {
+		const currentState = store.getState()
+		enemyLife.destroy()
+		hamLife.destroy()
+		enemyLife = this.add.text(10, 0, 'Enemy : '+currentState.stats.scores.enemyLife , { font: '16px Courier' });
+		hamLife = this.add.text(250, 0, 'Life : '+currentState.stats.scores.hamLife , { font: '16px Courier' });
+
+		for (let i = 0; i < this.sprites.length; i++)
+        {
+            const sprite = this.sprites[i].s;
+
+            sprite.y -= this.sprites[i].r;
+
+            if (currentState.stats.useSkill && sprite.y < -256)
+            {
+                sprite.y = 300;
+            }
+        }
+
+
 		if (globalThis.processRunning){
 			return
 		}
+		
 		if (poops.length>0){
 			poops=poops.filter((poop, index, arr)=>{
-				if (poop.stop||poop.x>200){
+				if (currentState.stats.useSkill){
 					poop.stop = true
 					poop.setActive(false).setVisible(false);
 					poop.destroy();
+					this.dispatch(addMove(1))
+					return false
+				}	
+				if (poop.stop||poop.x>220){
+					poop.stop = true
+					poop.setActive(false).setVisible(false);
+					poop.destroy();
+					this.dispatch(playSound('sibal'))
+					hamface.hitAnimation()
+					this.dispatch(addLife(-1))
 					return false
 				} else {
 					poop.x += speed1;
@@ -90,8 +183,8 @@ class DefenseScene extends Phaser.Scene
         
 		if (poopLastGen+poopRegen<time){
 			poopLastGen = time+poopRegen
-			const y = 70*Math.random()
-			const bulletRandom = this.add.image(10, y, 'poop').setOrigin(0);
+			const y = 15+55*Math.random()
+			const bulletRandom = this.add.image(20, y, 'poop').setOrigin(0);
 			poops.push(bulletRandom)
 			console.log("poops", poops.length , poops)
 		}
@@ -112,11 +205,14 @@ let poopLastGen = 0
 var bullet1;
 var bullet2;
 
-var speed1;
-var speed2;
+let speed1;
+let hamface
+let enemyLife
+let hamLife
+let skillUsed
 
 const config = {
-	backgroundColor: '#ffffff',
+	backgroundColor: '#ffe3f7',
   //   scale: {
 	  parent: 'defense-board', // this has to match the div id in index.html
 	  // fullscreenTarget: 'body', // this has to be the wrapping element
@@ -131,7 +227,7 @@ const config = {
   //     createContainer: false
   //   },
   //   scene: [MainScene],
-	  scene: [DefenseScene]
+	  scene: [ReadyScene, DefenseScene]
 		//   preload: ()=>
 		//   {
 		// 	  // this.load.image('bullet', 'assets/tests/timer/bullet-bill.png');
@@ -152,11 +248,13 @@ const config = {
   //       gravity: { y: 400 }
   //     }
   //   }
-  }
-
+  }	
 const DefenseBoard : React.FC = (props:any) => {
-	let game = new Phaser.Game(config)
-console.log("Re render Defense Board")
+	const dispatch = useDispatch()
+	
+	const game = new Phaser.Game(config)
+	game.scene.start('DefenseScene', {dispatch});
+	console.log("Re render Defense Board")
     return (
         <div id="defense-board">
 			{/* <div id="enemy-hit-points-box"></div>
@@ -173,4 +271,9 @@ console.log("Re render Defense Board")
     )
 }
 
-export default DefenseBoard;
+export default DefenseBoard
+// export default connect((state:RootState) => ({
+// 	// blockStats: state.stats.blocks,
+// 	// move: state.stats.move
+// 	scores: state.stats.scores
+//   }))(DefenseBoard);
